@@ -1,30 +1,35 @@
 package zeromax.domain;
 
+import zeromax.equipment.Barrel;
+import zeromax.equipment.NormalBarrel;
+import zeromax.equipment.NormalWheel;
+import zeromax.equipment.Wheel;
 import zeromax.interfaces.Drawable;
 import zeromax.interfaces.Facing;
 import zeromax.interfaces.Tank;
 
 public class EnemyTank implements Tank, Drawable {
     private int killCount;
-    private int equipmentBarrel;
+    private Barrel equipmentBarrel;
     private int equipmentArmor;
-    private int equipmentWheel;
+    private Wheel equipmentWheel;
     private int equipmentLight;
     private int botAI;
-    private int tPosX;
-    private int tPosY;
+    private int posX;
+    private int posY;
     private int x;
     private int y;
     private Facing nowFacing;
+    private static final int displayPriority = 0;
 
     @Override
-    public int getTPosX() {
-        return tPosX;
+    public int getPosX() {
+        return posX;
     }
 
     @Override
-    public int getTPosY() {
-        return tPosY;
+    public int getPosY() {
+        return posY;
     }
 
     @Override
@@ -44,18 +49,18 @@ public class EnemyTank implements Tank, Drawable {
 
     EnemyTank() {
         killCount = 0;
-        equipmentBarrel = 0;
+        equipmentBarrel = new NormalBarrel();
         equipmentArmor = 0;
-        equipmentWheel = 0;
+        equipmentWheel = new NormalWheel();
         equipmentLight = 0;
         botAI = 0;
     }
 
     EnemyTank(int botAI) {
         killCount = 0;
-        equipmentBarrel = 0;
+        equipmentBarrel = new NormalBarrel();
         equipmentArmor = 0;
-        equipmentWheel = 0;
+        equipmentWheel = new NormalWheel();
         equipmentLight = 0;
         switch (botAI) {
             case 0:
@@ -63,6 +68,11 @@ public class EnemyTank implements Tank, Drawable {
             case 1:
                 botAI = 1;
         }
+    }
+
+    @Override
+    public int getDisplayPriority() {
+        return displayPriority;
     }
 
     @Override
@@ -83,5 +93,15 @@ public class EnemyTank implements Tank, Drawable {
     @Override
     public void pickUpItem() {
 
+    }
+
+    @Override
+    public Barrel getEquipmentBarrel() {
+        return equipmentBarrel;
+    }
+
+    @Override
+    public Wheel getEquipmentWheel() {
+        return equipmentWheel;
     }
 }

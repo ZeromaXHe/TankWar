@@ -5,6 +5,7 @@ import zeromax.interfaces.Drawable;
 import zeromax.interfaces.Facing;
 import zeromax.interfaces.Tank;
 import zeromax.utils.DrawUtils;
+import zeromax.utils.SoundUtils;
 
 import java.io.IOException;
 
@@ -12,11 +13,12 @@ public class Bullet implements Drawable {
     private int damage;
     private int speed;
     private int interval;//使用fps计数
-    private int bulletPosX;
-    private int bulletPosY;
+    private int posX;
+    private int posY;
     private int x;
     private int y;
     private Facing facing;
+    private static final int displayPriority = 0;
 
     private String imgPath = "TankWar\\res\\img/bullet_u.gif";
 
@@ -41,8 +43,8 @@ public class Bullet implements Drawable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                bulletPosX = tank.getTPosX()+tank.getX()/2-x/2;
-                bulletPosY = tank.getTPosY()-y;
+                posX = tank.getPosX()+tank.getX()/2-x/2;
+                posY = tank.getPosY()-y;
                 break;
             case SOUTH:
                 imgPath = "TankWar\\res\\img/bullet_d.gif";
@@ -53,8 +55,8 @@ public class Bullet implements Drawable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                bulletPosX = tank.getTPosX()+tank.getX()/2-x/2;
-                bulletPosY = tank.getTPosY()+tank.getY();
+                posX = tank.getPosX()+tank.getX()/2-x/2;
+                posY = tank.getPosY()+tank.getY();
                 break;
             case WEST:
                 imgPath = "TankWar\\res\\img/bullet_l.gif";
@@ -65,8 +67,8 @@ public class Bullet implements Drawable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                bulletPosX = tank.getTPosX()-x;
-                bulletPosY = tank.getTPosY()+tank.getY()/2-y/2;
+                posX = tank.getPosX()-x;
+                posY = tank.getPosY()+tank.getY()/2-y/2;
                 break;
             case EAST:
                 imgPath = "TankWar\\res\\img/bullet_r.gif";
@@ -77,16 +79,27 @@ public class Bullet implements Drawable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                bulletPosX = tank.getTPosX()+tank.getX();
-                bulletPosY = tank.getTPosY()+tank.getY()/2-y/2;
+                posX = tank.getPosX()+tank.getX();
+                posY = tank.getPosY()+tank.getY()/2-y/2;
                 break;
+        }
+        try {
+            SoundUtils.play("TankWar/res/snd/fire.wav");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
+
+    @Override
+    public int getDisplayPriority() {
+        return displayPriority;
+    }
+
     @Override
     public void draw(){
         try {
-            DrawUtils.draw(imgPath, bulletPosX, bulletPosY);
+            DrawUtils.draw(imgPath, posX, posY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,14 +107,14 @@ public class Bullet implements Drawable {
 
     public void move(){
         switch(facing){
-            case WEST: bulletPosX -= speed;break;
-            case EAST: bulletPosX += speed;break;
-            case SOUTH: bulletPosY += speed;break;
-            case NORTH: bulletPosY -= speed;break;
+            case WEST: posX -= speed;break;
+            case EAST: posX += speed;break;
+            case SOUTH: posY += speed;break;
+            case NORTH: posY -= speed;break;
         }
     }
     public boolean isOutOfMap(){
-        return (bulletPosY<0||bulletPosY> Config.HEIGHT||bulletPosX<0||bulletPosX>Config.WIDTH);
+        return (posY <0|| posY > Config.HEIGHT|| posX <0|| posX >Config.WIDTH);
     }
 
 }

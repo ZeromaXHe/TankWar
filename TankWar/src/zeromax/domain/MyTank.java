@@ -19,21 +19,35 @@ public class MyTank implements Tank, Drawable {
     private Wheel equipmentWheel;
     private int equipmentLight;
     private String imgPath = "TankWar\\res\\img/tank_u.gif";
+    private static final int displayPriority = 0;
 
-    private int tPosX;
-    private int tPosY;
+    private int posX;
+    private int posY;
     private int x;
     private int y;
     private Facing nowFacing;
 
     @Override
-    public int getTPosX() {
-        return tPosX;
+    public int getDisplayPriority() {
+        return displayPriority;
+    }
+
+    public Barrel getEquipmentBarrel() {
+        return equipmentBarrel;
+    }
+
+    public Wheel getEquipmentWheel() {
+        return equipmentWheel;
     }
 
     @Override
-    public int getTPosY() {
-        return tPosY;
+    public int getPosX() {
+        return posX;
+    }
+
+    @Override
+    public int getPosY() {
+        return posY;
     }
 
     @Override
@@ -58,10 +72,10 @@ public class MyTank implements Tank, Drawable {
         equipmentWheel = new NormalWheel();
 
         nowFacing = Facing.NORTH;
-        tPosX = posX;
-        tPosY = posY;
+        this.posX = posX;
+        this.posY = posY;
         try {
-            int[] arr=DrawUtils.getSize(imgPath);
+            int[] arr = DrawUtils.getSize(imgPath);
             x = arr[0];
             y = arr[1];
         } catch (IOException e) {
@@ -74,7 +88,7 @@ public class MyTank implements Tank, Drawable {
     @Override
     public void draw() {
         try {
-            DrawUtils.draw(imgPath, tPosX, tPosY);
+            DrawUtils.draw(imgPath, posX, posY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,8 +96,10 @@ public class MyTank implements Tank, Drawable {
 
     @Override
     public Bullet shoot() {
-
-        return new Bullet(this);
+        if (equipmentBarrel.isShootable()) {
+            equipmentBarrel.setZeroIntervalCount();
+            return new Bullet(this);
+        } else return null;
     }
 
     @Override
@@ -93,33 +109,29 @@ public class MyTank implements Tank, Drawable {
                 if (nowFacing != facing) {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_r.gif";
-                }
-                if (tPosX + equipmentWheel.speed < Config.WIDTH - x) tPosX += equipmentWheel.speed;
-                else tPosX = Config.WIDTH - x;
+                } else if (posX + equipmentWheel.speed < Config.WIDTH - x) posX += equipmentWheel.speed;
+                else posX = Config.WIDTH - x;
                 break;
             case WEST:
                 if (nowFacing != facing) {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_l.gif";
-                }
-                if (tPosX - equipmentWheel.speed > 0) tPosX -= equipmentWheel.speed;
-                else tPosX = 0;
+                } else if (posX - equipmentWheel.speed > 0) posX -= equipmentWheel.speed;
+                else posX = 0;
                 break;
             case NORTH:
                 if (nowFacing != facing) {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_u.gif";
-                }
-                if (tPosY - equipmentWheel.speed > 0) tPosY -= equipmentWheel.speed;
-                else tPosY = 0;
+                } else if (posY - equipmentWheel.speed > 0) posY -= equipmentWheel.speed;
+                else posY = 0;
                 break;
             case SOUTH:
                 if (nowFacing != facing) {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_d.gif";
-                }
-                if (tPosY + equipmentWheel.speed < Config.HEIGHT - y) tPosY += equipmentWheel.speed;
-                else tPosY = Config.HEIGHT - y;
+                } else if (posY + equipmentWheel.speed < Config.HEIGHT - y) posY += equipmentWheel.speed;
+                else posY = Config.HEIGHT - y;
                 break;
         }
     }
