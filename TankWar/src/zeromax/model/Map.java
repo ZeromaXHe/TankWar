@@ -36,6 +36,10 @@ public class Map {
         else return BORDER=new Border(i*Config.TILEX,j*Config.TILEY);
     }
 
+    public void setMapItem(int i,int j,Drawable d) {
+        mapItem[i][j] = d;
+    }
+
     private void init() {
         Random rand = new Random();
         mapItem = new Drawable[width][height];

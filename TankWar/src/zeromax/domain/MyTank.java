@@ -19,12 +19,33 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable {
     private int equipmentLight;
     private String imgPath = "TankWar\\res\\img/tank_u.gif";
     private static final int displayPriority = 0;
+    private int healthPoint = 100;
 
     private int posX;
     private int posY;
     private int x;
     private int y;
     private Facing nowFacing;
+
+    public MyTank(int posX, int posY) {
+
+        killCount = 0;
+        equipmentBarrel = new NormalBarrel();
+        equipmentArmor = 0;
+        equipmentWheel = new NormalWheel();
+
+        nowFacing = Facing.NORTH;
+        this.posX = posX;
+        this.posY = posY;
+        try {
+            int[] arr = DrawUtils.getSize(imgPath);
+            x = arr[0];
+            y = arr[1];
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public int getDisplayPriority() {
@@ -60,27 +81,20 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable {
     }
 
     @Override
-    public Facing getNowFacing() {
-        return nowFacing;
+    public Blast showBlast() {
+        return new Blast(posX+x/2,posY+y/2);
     }
 
-    public MyTank(int posX, int posY) {
-        killCount = 0;
-        equipmentBarrel = new NormalBarrel();
-        equipmentArmor = 0;
-        equipmentWheel = new NormalWheel();
+    @Override
+    public boolean decreaseHP(Bullet bullet) {
+        healthPoint-=bullet.getDamage();
+        if(healthPoint>0)return false;
+        else return true;
+    }
 
-        nowFacing = Facing.NORTH;
-        this.posX = posX;
-        this.posY = posY;
-        try {
-            int[] arr = DrawUtils.getSize(imgPath);
-            x = arr[0];
-            y = arr[1];
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    @Override
+    public Facing getNowFacing() {
+        return nowFacing;
     }
 
 

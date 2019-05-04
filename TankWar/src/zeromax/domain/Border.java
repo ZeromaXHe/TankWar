@@ -55,4 +55,15 @@ public class Border implements Drawable, Collideable, Hitable {
     public int getY() {
         return y;
     }
+
+    @Override
+    public Blast showBlast() {
+        return null;
+    }
+
+    @Override
+    public boolean decreaseHP(Bullet bullet) {
+        return false;
+    }
+
 }

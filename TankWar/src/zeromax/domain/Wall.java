@@ -1,21 +1,19 @@
 package zeromax.domain;
 
-import zeromax.interfaces.Collideable;
-import zeromax.interfaces.Config;
-import zeromax.interfaces.Drawable;
-import zeromax.interfaces.Hitable;
+import zeromax.interfaces.*;
 import zeromax.utils.DrawUtils;
 
 import java.io.IOException;
 
-public class Wall implements Drawable, Collideable, Hitable {
-    private int healthyPoint;
+public class Wall implements Drawable, Collideable, Hitable, Clearable {
+    private int healthPoint = 30;
     private int posX;
     private int posY;
     private int x = Config.TILEX;
     private int y = Config.TILEY;
     private String imgPath = "TankWar\\res\\img/wall.gif";
     private static final int displayPriority = 0;
+    private boolean toBeCleared =false;
 
     public Wall(int posX, int posY) {
         this.posX = posX;
@@ -25,6 +23,11 @@ public class Wall implements Drawable, Collideable, Hitable {
     @Override
     public int getDisplayPriority() {
         return displayPriority;
+    }
+
+    @Override
+    public boolean isToBeCleared() {
+        return toBeCleared;
     }
 
     @Override
@@ -53,5 +56,20 @@ public class Wall implements Drawable, Collideable, Hitable {
     @Override
     public int getY() {
         return y;
+    }
+
+    @Override
+    public Blast showBlast() {
+        return new Blast(posX+x/2,posY+y/2);
+    }
+
+    @Override
+    public boolean decreaseHP(Bullet bullet) {
+        healthPoint-=bullet.getDamage();
+        if(healthPoint>0)return false;
+        else {
+            toBeCleared = true;
+            return true;
+        }
     }
 }

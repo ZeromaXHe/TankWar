@@ -1,5 +1,8 @@
 package zeromax.interfaces;
 
+import zeromax.domain.Blast;
+import zeromax.domain.Bullet;
+
 public interface Hitable {
     int getPosX();
 
@@ -8,4 +11,8 @@ public interface Hitable {
     int getX();
 
     int getY();
+
+    Blast showBlast();
+
+    boolean decreaseHP(Bullet bullet);
 }

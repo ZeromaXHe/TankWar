@@ -7,7 +7,7 @@ import zeromax.utils.SoundUtils;
 
 import java.io.IOException;
 
-public class Bullet implements Drawable, Collideable, Hitable {
+public class Bullet implements Drawable, Collideable, Hitable, Clearable {
     private int damage;
     private int speed;
     private int interval;//使用fps计数
@@ -18,6 +18,8 @@ public class Bullet implements Drawable, Collideable, Hitable {
     private Facing facing;
     private static final int displayPriority = 0;
     private boolean toBeCleared = false;
+    private boolean initialMove = false;
+    private Hitable hit;
 
     private String imgPath = "TankWar\\res\\img/bullet_u.gif";
 
@@ -105,6 +107,14 @@ public class Bullet implements Drawable, Collideable, Hitable {
         }
     }
 
+    public Hitable getHit() {
+        return hit;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
     @Override
     public int getPosX() {
         return posX;
@@ -125,29 +135,22 @@ public class Bullet implements Drawable, Collideable, Hitable {
         return y;
     }
 
+    @Override
+    public Blast showBlast() {
+        return new Blast(posX,posY);
+    }
+
+    @Override
+    public boolean decreaseHP(Bullet bullet) {
+        return true;
+    }
+
+    @Override
     public boolean isToBeCleared() {
         return toBeCleared;
     }
 
     public void move(Map map) {
-//        switch(facing){
-//            case WEST: {
-//                westHitCheck(map);
-//                break;
-//            }
-//            case EAST: {
-//                eastHitCheck(map);
-//                break;
-//            }
-//            case SOUTH: {
-//                southHitCheck(map);
-//                break;
-//            }
-//            case NORTH: {
-//                northHitCheck(map);
-//                break;
-//            }
-//        }
         hitCheck(map, facing);
     }
 
@@ -156,18 +159,45 @@ public class Bullet implements Drawable, Collideable, Hitable {
         int nowj1 = (posY + 1) / Config.TILEY;
         int nowi2 = (posX + x - 1) / Config.TILEY;
         int nowj2 = (posY + y - 1) / Config.TILEY;
+        int midx = (posX + x / 2) / Config.TILEX;
+        int midy = (posY + y / 2) / Config.TILEY;
 
         int endi1 = nowi1;
         int endj1 = nowj1;
         int endi2 = nowi2;
         int endj2 = nowj2;
         Drawable d;
-
-        if (map.getMapItem(nowi1, nowj1) instanceof Hitable
-                || map.getMapItem(nowi2, nowj2) instanceof Hitable
-                || map.getMapItem(nowi1, nowj2) instanceof Hitable
-                || map.getMapItem(nowi2, nowj1) instanceof Hitable) {
-            toBeCleared = true;
+        if (!initialMove) {
+            initialMove = true;
+            if (facing == Facing.NORTH || facing == Facing.SOUTH) {
+                Drawable d1 = map.getMapItem(midx, nowj1);
+                Drawable d2 = map.getMapItem(midx, nowj2);
+                if (d1 instanceof Hitable) {
+                    toBeCleared = true;
+                    hit = (Hitable) d1;
+                    hitSound();
+                    return;
+                } else if (d2 instanceof Hitable) {
+                    toBeCleared = true;
+                    hit = (Hitable) d2;
+                    hitSound();
+                    return;
+                }
+            } else if (facing == Facing.WEST || facing == Facing.EAST) {
+                Drawable d1 = map.getMapItem(nowi1, midy);
+                Drawable d2 = map.getMapItem(nowi2, midy);
+                if (d1 instanceof Hitable) {
+                    toBeCleared = true;
+                    hit = (Hitable) d1;
+                    hitSound();
+                    return;
+                } else if (d2 instanceof Hitable) {
+                    toBeCleared = true;
+                    hit = (Hitable) d2;
+                    hitSound();
+                    return;
+                }
+            }
         }
         switch (facing) {
             case NORTH: {
@@ -179,17 +209,13 @@ public class Bullet implements Drawable, Collideable, Hitable {
                 }
                 for (int j = nowj2; j >= endj1; j--) {
 
-                    d = map.getMapItem(nowi1, j);
+                    d = map.getMapItem(midx, j);
                     if (d instanceof Hitable) {
                         posY = ((Hitable) d).getPosY() + ((Hitable) d).getY();
                         toBeCleared = true;
-                        break;
-                    }
-                    d = map.getMapItem(nowi2, j);
-                    if (d instanceof Hitable) {
-                        posY = ((Hitable) d).getPosY() + ((Hitable) d).getY();
-                        toBeCleared = true;
-                        break;
+                        hit = (Hitable) d;
+                        hitSound();
+                        return;
                     }
 
                     if (j != nowj2 && j == endj1) posY -= speed;
@@ -204,18 +230,15 @@ public class Bullet implements Drawable, Collideable, Hitable {
                     break;
                 }
                 for (int j = nowj1; j <= endj2; j++) {
-                    d = map.getMapItem(nowi1, j);
+                    d = map.getMapItem(midx, j);
                     if (d instanceof Hitable) {
                         posY = ((Hitable) d).getPosY() - y;
                         toBeCleared = true;
-                        break;
+                        hit = (Hitable) d;
+                        hitSound();
+                        return;
                     }
-                    d = map.getMapItem(nowi2, j);
-                    if (d instanceof Hitable) {
-                        posY = ((Hitable) d).getPosY() - y;
-                        toBeCleared = true;
-                        break;
-                    }
+
                     if (j != nowj1 && j == endj2) posY += speed;
                 }
             }
@@ -228,18 +251,15 @@ public class Bullet implements Drawable, Collideable, Hitable {
                     break;
                 }
                 for (int i = nowi2; i >= endi1; i--) {
-                    d = map.getMapItem(i, nowj1);
+                    d = map.getMapItem(i, midy);
                     if (d instanceof Hitable) {
                         posX = ((Hitable) d).getPosX() + ((Hitable) d).getX();
                         toBeCleared = true;
-                        break;
+                        hit = (Hitable) d;
+                        hitSound();
+                        return;
                     }
-                    d = map.getMapItem(i, nowj2);
-                    if (d instanceof Hitable) {
-                        posX = ((Hitable) d).getPosX() + ((Hitable) d).getX();
-                        toBeCleared = true;
-                        break;
-                    }
+
                     if (i != nowi2 && i == endi1) posX -= speed;
                 }
             }
@@ -252,158 +272,29 @@ public class Bullet implements Drawable, Collideable, Hitable {
                     break;
                 }
                 for (int i = nowi1; i <= endi2; i++) {
-                    d = map.getMapItem(i, nowj1);
+                    d = map.getMapItem(i, midy);
                     if (d instanceof Hitable) {
                         posX = ((Hitable) d).getPosX() - x;
                         toBeCleared = true;
-                        break;
+                        hit = (Hitable) d;
+                        hitSound();
+                        return;
                     }
-                    d = map.getMapItem(i, nowj2);
-                    if (d instanceof Hitable) {
-                        posX = ((Hitable) d).getPosX() - x;
-                        toBeCleared = true;
-                        break;
-                    }
+
                     if (i != nowi1 && i == endi2) posX += speed;
                 }
             }
             break;
         }
-        if (isToBeCleared()) {
-            try {
-                SoundUtils.play("TankWar/res/snd/hit.wav");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 
-//    @Deprecated
-//    private void northHitCheck(Map map) {
-//        int estimatedPosY1 = posY;
-//        int estimatedPosY2 = posY;
-//        for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEY) {
-//            int moveDistance = Math.min(Config.TILEY, speed - checkDistance);
-//            Drawable d1 = map.getMapItem((posX + 1) / Config.TILEX, (posY - checkDistance - 1) / Config.TILEY);
-//            Drawable d2 = map.getMapItem((posX + x - 1) / Config.TILEX, (posY - checkDistance - 1) / Config.TILEY);
-//            if (d1 != null && d1 instanceof Hitable) {
-//                if (estimatedPosY1 - moveDistance > ((Hitable) d1).getPosY() + y)
-//                    estimatedPosY1 -= moveDistance;
-//                else {
-//                    estimatedPosY1 = ((Hitable) d1).getPosY() + y;
-//                    toBeCleared = true;
-//                }
-//            } else estimatedPosY1 -= moveDistance;
-//            if (d2 != null && d2 instanceof Hitable) {
-//                if (estimatedPosY2 - moveDistance > ((Hitable) d2).getPosY() + y)
-//                    estimatedPosY2 -= moveDistance;
-//                else {
-//                    estimatedPosY2 = ((Hitable) d2).getPosY() + y;
-//                    toBeCleared = true;
-//                }
-//            } else estimatedPosY2 -= moveDistance;
-//            if (posY == Math.max(estimatedPosY1, estimatedPosY2)) {
-//                toBeCleared = true;
-//                break;
-//            } else posY = Math.max(estimatedPosY1, estimatedPosY2);
-//        }
-//    }
-//
-//    @Deprecated
-//    private void southHitCheck(Map map) {
-//        int estimatedPosY1 = posY;
-//        int estimatedPosY2 = posY;
-//        for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEX) {
-//            int moveDistance = Math.min(Config.TILEY, speed - checkDistance);
-//            Drawable d1 = map.getMapItem((posX + 1) / Config.TILEX, (posY + y + checkDistance + 1) / Config.TILEY);
-//            Drawable d2 = map.getMapItem((posX + x - 1) / Config.TILEX, (posY + y + checkDistance + 1) / Config.TILEY);
-//            if (d1 != null && d1 instanceof Hitable) {
-//                if (estimatedPosY1 + moveDistance < ((Hitable) d1).getPosY() - y)
-//                    estimatedPosY1 += moveDistance;
-//                else {
-//                    toBeCleared = true;
-//                    estimatedPosY1 = ((Hitable) d1).getPosY() - y;
-//                }
-//            } else estimatedPosY1 += moveDistance;
-//            if (d2 != null && d2 instanceof Hitable) {
-//                if (estimatedPosY2 + moveDistance < ((Hitable) d2).getPosY() - y)
-//                    estimatedPosY2 += moveDistance;
-//                else {
-//                    estimatedPosY2 = ((Hitable) d2).getPosY() - y;
-//                    toBeCleared = true;
-//                }
-//            } else estimatedPosY2 += moveDistance;
-//            if (posY == Math.min(estimatedPosY1, estimatedPosY2)) {
-//                toBeCleared = true;
-//                break;
-//            } else posY = Math.min(estimatedPosY1, estimatedPosY2);
-//        }
-//    }
-//
-//    @Deprecated
-//    private void eastHitCheck(Map map) {
-//        int estimatedPosX1 = posX;
-//        int estimatedPosX2 = posX;
-//        for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEX) {
-//            int moveDistance = Math.min(Config.TILEX, speed - checkDistance);
-//            Drawable d1 = map.getMapItem((posX + x + checkDistance + 1) / Config.TILEX, (posY + 1) / Config.TILEY);
-//            Drawable d2 = map.getMapItem((posX + x + checkDistance + 1) / Config.TILEX, (posY + y - 1) / Config.TILEY);
-//            if (d1 != null && d1 instanceof Hitable) {
-//                if (estimatedPosX1 + moveDistance < ((Hitable) d1).getPosX() - x)
-//                    estimatedPosX1 += moveDistance;
-//                else {
-//                    toBeCleared = true;
-//                    estimatedPosX1 = ((Hitable) d1).getPosX() - x;
-//                }
-//            } else estimatedPosX1 += moveDistance;
-//            if (d2 != null && d2 instanceof Hitable) {
-//                if (estimatedPosX2 + moveDistance < ((Hitable) d2).getPosX() - x)
-//                    estimatedPosX2 += moveDistance;
-//                else {
-//                    toBeCleared = true;
-//                    estimatedPosX2 = ((Hitable) d2).getPosX() - x;
-//                }
-//            } else estimatedPosX2 += moveDistance;
-//            if (posX == Math.min(estimatedPosX1, estimatedPosX2)) {
-//                toBeCleared = true;
-//                break;
-//            } else posX = Math.min(estimatedPosX1, estimatedPosX2);
-//        }
-//    }
-//
-//    @Deprecated
-//    private void westHitCheck(Map map) {
-//        int estimatedPosX1 = posX;
-//        int estimatedPosX2 = posX;
-//        for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEX) {
-//            int moveDistance = Math.min(Config.TILEX, speed - checkDistance);
-//            Drawable d1 = map.getMapItem((posX - checkDistance - 1) / Config.TILEX, (posY + 1) / Config.TILEY);
-//            Drawable d2 = map.getMapItem((posX - checkDistance - 1) / Config.TILEX, (posY + y - 1) / Config.TILEY);
-//            if (d1 != null && d1 instanceof Hitable) {
-//                if (estimatedPosX1 - moveDistance > ((Hitable) d1).getPosX() + x)
-//                    estimatedPosX1 -= moveDistance;
-//                else {
-//                    estimatedPosX1 = ((Hitable) d1).getPosX() + x;
-//                    toBeCleared = true;
-//                }
-//            } else estimatedPosX1 -= moveDistance;
-//            if (d2 != null && d2 instanceof Hitable) {
-//                if (estimatedPosX2 - moveDistance > ((Hitable) d2).getPosX() + x)
-//                    estimatedPosX2 -= moveDistance;
-//                else {
-//                    estimatedPosX2 = ((Hitable) d2).getPosX() + x;
-//                    toBeCleared = true;
-//                }
-//            } else estimatedPosX2 -= moveDistance;
-//            if (posX == Math.max(estimatedPosX1, estimatedPosX2)) {
-//                toBeCleared = true;
-//                break;
-//            } else posX = Math.max(estimatedPosX1, estimatedPosX2);
-//        }
-//    }
-//    public void isOutOfMap(){
-//        toBeCleared = (posY <0|| posY > Config.HEIGHT|| posX <0|| posX >Config.WIDTH);
-//    }
+    private void hitSound(){
+        try {
+            SoundUtils.play("TankWar/res/snd/hit.wav");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
