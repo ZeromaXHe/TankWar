@@ -9,8 +9,10 @@ import zeromax.interfaces.Tank;
 import zeromax.model.Map;
 import zeromax.ui_n_camera.Camera;
 import zeromax.ui_n_camera.UI;
+import zeromax.utils.SoundUtils;
 import zeromax.utils.Window;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -35,7 +37,7 @@ public class GameWindowController extends Window {
                 if(map.getMapItem(i,j)!=null)list.add(map.getMapItem(i,j));
             }
         }
-        mt = new MyTank(Config.WIDTH / 2, Config.HEIGHT / 2);
+        mt = new MyTank(0, 0);
         list.add(mt);
     }
 
@@ -82,14 +84,22 @@ public class GameWindowController extends Window {
         ui.displayUpdate();
         Collections.sort(list, Comparator.comparing(Drawable::getDisplayPriority));//方法引用简化了lambda表达式：(o1,o2)->{return o1.getDisplayPriority() - o2.getDisplayPriority();});
         for (Drawable drawable : list) {
-            drawable.draw();
             if (drawable instanceof Bullet) {
-                if (((Bullet) drawable).isOutOfMap()) list.remove(drawable);
-                ((Bullet) drawable).move();
+                if (((Bullet) drawable).isToBeCleared()) {
+                    list.remove(drawable);
+                    try {
+                        SoundUtils.play("TankWar/res/snd/hit.wav");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    continue;
+                }
+                else ((Bullet) drawable).move(map);
             }
             if (drawable instanceof Tank) {
                 ((Tank) drawable).getEquipmentBarrel().addIntervalCount();
             }
+            drawable.draw();
         }
 
     }

@@ -3,11 +3,12 @@ package zeromax.domain;
 import zeromax.interfaces.Collideable;
 import zeromax.interfaces.Config;
 import zeromax.interfaces.Drawable;
+import zeromax.interfaces.Hitable;
 import zeromax.utils.DrawUtils;
 
 import java.io.IOException;
 
-public class Wall implements Drawable, Collideable {
+public class Wall implements Drawable, Collideable, Hitable {
     private int healthyPoint;
     private int posX;
     private int posY;

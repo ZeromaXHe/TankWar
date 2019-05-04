@@ -4,13 +4,10 @@ import zeromax.equipment.Barrel;
 import zeromax.equipment.NormalBarrel;
 import zeromax.equipment.NormalWheel;
 import zeromax.equipment.Wheel;
-import zeromax.interfaces.Collideable;
-import zeromax.interfaces.Drawable;
-import zeromax.interfaces.Facing;
-import zeromax.interfaces.Tank;
+import zeromax.interfaces.*;
 import zeromax.model.Map;
 
-public class EnemyTank implements Tank, Drawable, Collideable {
+public class EnemyTank implements Tank, Drawable, Collideable, Hitable {
     private int killCount;
     private Barrel equipmentBarrel;
     private int equipmentArmor;

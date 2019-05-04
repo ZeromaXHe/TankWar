@@ -1,12 +1,13 @@
 package zeromax.domain;
 
 import zeromax.interfaces.*;
+import zeromax.model.Map;
 import zeromax.utils.DrawUtils;
 import zeromax.utils.SoundUtils;
 
 import java.io.IOException;
 
-public class Bullet implements Drawable, Collideable {
+public class Bullet implements Drawable, Collideable, Hitable {
     private int damage;
     private int speed;
     private int interval;//使用fps计数
@@ -16,6 +17,7 @@ public class Bullet implements Drawable, Collideable {
     private int y;
     private Facing facing;
     private static final int displayPriority = 0;
+    private boolean toBeCleared = false;
 
     private String imgPath = "TankWar\\res\\img/bullet_u.gif";
 
@@ -120,16 +122,139 @@ public class Bullet implements Drawable, Collideable {
     public int getY() {
         return y;
     }
-    public void move(){
+
+    public boolean isToBeCleared() {
+        return toBeCleared;
+    }
+
+    public void move(Map map){//TODO：下面这坨又臭又长的代码需要重构
         switch(facing){
-            case WEST: posX -= speed;break;
-            case EAST: posX += speed;break;
-            case SOUTH: posY += speed;break;
-            case NORTH: posY -= speed;break;
+            case WEST: {
+                int estimatedPosX1 = posX;
+                int estimatedPosX2 = posX;
+                for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEX) {
+                    int moveDistance = Math.min(Config.TILEX,speed-checkDistance);
+                    Drawable d1 = map.getMapItem((posX - checkDistance - 1) / Config.TILEX , (posY + 1) / Config.TILEY);
+                    Drawable d2 = map.getMapItem((posX - checkDistance - 1) / Config.TILEX , (posY + y - 1) / Config.TILEY);
+                    if (d1 != null && d1 instanceof Hitable) {
+                        if (estimatedPosX1 - moveDistance > ((Hitable) d1).getPosX() + x)
+                            estimatedPosX1 -= moveDistance;
+                        else {
+                            estimatedPosX1 = ((Hitable) d1).getPosX() + x;
+                            toBeCleared = true;
+                        }
+                    } else estimatedPosX1 -= moveDistance;
+                    if (d2 != null && d2 instanceof Hitable) {
+                        if (estimatedPosX2 - moveDistance > ((Hitable) d2).getPosX() + x)
+                            estimatedPosX2 -= moveDistance;
+                        else {
+                            estimatedPosX2 = ((Hitable) d2).getPosX() + x;
+                            toBeCleared = true;
+                        }
+                    } else estimatedPosX2 -= moveDistance;
+                    if (posX == Math.max(estimatedPosX1, estimatedPosX2)) {
+                        toBeCleared = true;
+                        break;
+                    } else posX = Math.max(estimatedPosX1, estimatedPosX2);
+                }
+                break;
+            }
+            case EAST: {
+                int estimatedPosX1 = posX;
+                int estimatedPosX2 = posX;
+                for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEX) {
+                    int moveDistance = Math.min(Config.TILEX,speed-checkDistance);
+                    Drawable d1 = map.getMapItem((posX + x + checkDistance + 1) / Config.TILEX, (posY + 1) / Config.TILEY);
+                    Drawable d2 = map.getMapItem((posX + x + checkDistance + 1) / Config.TILEX, (posY + y - 1) / Config.TILEY);
+                    if (d1 != null && d1 instanceof Hitable) {
+                        if (estimatedPosX1 + moveDistance < ((Hitable) d1).getPosX() - x)
+                            estimatedPosX1 += moveDistance;
+                        else {
+                            toBeCleared =true;
+                            estimatedPosX1 = ((Hitable) d1).getPosX() - x;
+                        }
+                    } else estimatedPosX1 += moveDistance;
+                    if (d2 != null && d2 instanceof Hitable) {
+                        if (estimatedPosX2 + moveDistance < ((Hitable) d2).getPosX() - x)
+                            estimatedPosX2 += moveDistance;
+                        else {
+                            toBeCleared =true;
+                            estimatedPosX2 = ((Hitable) d2).getPosX() - x;
+                        }
+                    } else estimatedPosX2 += moveDistance;
+                    if (posX == Math.min(estimatedPosX1, estimatedPosX2)) {
+                        toBeCleared =true;
+                        break;
+                    }
+                    else posX = Math.min(estimatedPosX1, estimatedPosX2);
+                }
+                break;
+            }
+            case SOUTH: {
+                int estimatedPosY1 = posY;
+                int estimatedPosY2 = posY;
+                for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEX) {
+                    int moveDistance = Math.min(Config.TILEY,speed-checkDistance);
+                    Drawable d1 = map.getMapItem( (posX + 1) / Config.TILEX,(posY + y + checkDistance + 1) / Config.TILEY);
+                    Drawable d2 = map.getMapItem((posX + x - 1) / Config.TILEX, (posY + y + checkDistance + 1) / Config.TILEY);
+                    if (d1 != null && d1 instanceof Hitable) {
+                        if (estimatedPosY1 + moveDistance < ((Hitable) d1).getPosY() - y)
+                            estimatedPosY1 += moveDistance;
+                        else {
+                            toBeCleared =true;
+                            estimatedPosY1 = ((Hitable) d1).getPosY() - y;
+                        }
+                    } else estimatedPosY1 += moveDistance;
+                    if (d2 != null && d2 instanceof Hitable) {
+                        if (estimatedPosY2 + moveDistance < ((Hitable) d2).getPosY() - y)
+                            estimatedPosY2 += moveDistance;
+                        else {
+                            estimatedPosY2 = ((Hitable) d2).getPosY() - y;
+                            toBeCleared =true;
+                        }
+                    } else estimatedPosY2 += moveDistance;
+                    if (posY == Math.min(estimatedPosY1, estimatedPosY2)) {
+                        toBeCleared =true;
+                        break;
+                    }
+                    else posY = Math.min(estimatedPosY1, estimatedPosY2);
+                }
+                break;
+            }
+            case NORTH: {
+                int estimatedPosY1 = posY;
+                int estimatedPosY2 = posY;
+                for (int checkDistance = 0; checkDistance < speed; checkDistance += Config.TILEY) {
+                    int moveDistance = Math.min(Config.TILEY,speed-checkDistance);
+                    Drawable d1 = map.getMapItem((posX + 1) / Config.TILEX, (posY - checkDistance - 1) / Config.TILEY);
+                    Drawable d2 = map.getMapItem((posX + x - 1) / Config.TILEX, (posY - checkDistance - 1) / Config.TILEY);
+                    if (d1 != null && d1 instanceof Hitable) {
+                        if (estimatedPosY1 - moveDistance > ((Hitable) d1).getPosY() + y)
+                            estimatedPosY1 -= moveDistance;
+                        else {
+                            estimatedPosY1 = ((Hitable) d1).getPosY() + y;
+                            toBeCleared = true;
+                        }
+                    } else estimatedPosY1 -= moveDistance;
+                    if (d2 != null && d2 instanceof Hitable) {
+                        if (estimatedPosY2 - moveDistance > ((Hitable) d2).getPosY() + y)
+                            estimatedPosY2 -= moveDistance;
+                        else {
+                            estimatedPosY2 = ((Hitable) d2).getPosY() + y;
+                            toBeCleared = true;
+                        }
+                    } else estimatedPosY2 -= moveDistance;
+                    if (posY == Math.max(estimatedPosY1, estimatedPosY2)) {
+                        toBeCleared = true;
+                        break;
+                    } else posY = Math.max(estimatedPosY1, estimatedPosY2);
+                }
+                break;
+            }
         }
     }
-    public boolean isOutOfMap(){
-        return (posY <0|| posY > Config.HEIGHT|| posX <0|| posX >Config.WIDTH);
-    }
+//    public void isOutOfMap(){
+//        toBeCleared = (posY <0|| posY > Config.HEIGHT|| posX <0|| posX >Config.WIDTH);
+//    }
 
 }

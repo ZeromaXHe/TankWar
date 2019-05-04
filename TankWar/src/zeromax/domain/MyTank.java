@@ -11,7 +11,7 @@ import zeromax.utils.DrawUtils;
 
 import java.io.IOException;
 
-public class MyTank implements Tank, Drawable, Collideable {
+public class MyTank implements Tank, Drawable, Collideable, Hitable {
     private int killCount;
     private Barrel equipmentBarrel;
     private int equipmentArmor;
@@ -102,7 +102,7 @@ public class MyTank implements Tank, Drawable, Collideable {
     }
 
     @Override
-    public void move(Facing facing, Map map) {
+    public void move(Facing facing, Map map) {//TODO:下面这坨又臭又长的代码需要重构
         switch (facing) {
             case EAST:
                 if (nowFacing != facing) {
@@ -114,16 +114,17 @@ public class MyTank implements Tank, Drawable, Collideable {
                     for (int checkDistance = 0; checkDistance < equipmentWheel.speed; checkDistance += Config.TILEX) {
                         Drawable d1 = map.getMapItem((posX + x + checkDistance) / Config.TILEX, (posY + 1) / Config.TILEY);
                         Drawable d2 = map.getMapItem((posX + x + checkDistance) / Config.TILEX, (posY + y - 1) / Config.TILEY);
+                        int moveDistance = Math.min(Config.TILEX,equipmentWheel.speed-checkDistance);
                         if (d1 != null && d1 instanceof Collideable) {
-                            if (estimatedPosX1 + Config.TILEX < ((Collideable) d1).getPosX() - x)
-                                estimatedPosX1 += Config.TILEX;
+                            if (estimatedPosX1 + moveDistance < ((Collideable) d1).getPosX() - x)
+                                estimatedPosX1 += moveDistance;
                             else estimatedPosX1 = ((Collideable) d1).getPosX() - x;
-                        } else estimatedPosX1 += Config.TILEX;
+                        } else estimatedPosX1 += moveDistance;
                         if (d2 != null && d2 instanceof Collideable) {
-                            if (estimatedPosX2 + Config.TILEX < ((Collideable) d2).getPosX() - x)
-                                estimatedPosX2 += Config.TILEX;
+                            if (estimatedPosX2 + moveDistance < ((Collideable) d2).getPosX() - x)
+                                estimatedPosX2 += moveDistance;
                             else estimatedPosX2 = ((Collideable) d2).getPosX() - x;
-                        } else estimatedPosX2 += Config.TILEX;
+                        } else estimatedPosX2 += moveDistance;
                         if (posX == Math.min(estimatedPosX1, estimatedPosX2)) break;
                         else posX = Math.min(estimatedPosX1, estimatedPosX2);
                     }
@@ -137,17 +138,18 @@ public class MyTank implements Tank, Drawable, Collideable {
                     int estimatedPosX1 = posX;
                     int estimatedPosX2 = posX;
                     for (int checkDistance = 0; checkDistance < equipmentWheel.speed; checkDistance += Config.TILEX) {
+                        int moveDistance = Math.min(Config.TILEX,equipmentWheel.speed-checkDistance);
                         Drawable d1 = map.getMapItem((posX - checkDistance) / Config.TILEX - 1, (posY + 1) / Config.TILEY);
                         Drawable d2 = map.getMapItem((posX - checkDistance) / Config.TILEX - 1, (posY + y - 1) / Config.TILEY);
                         if (d1 != null && d1 instanceof Collideable) {
-                            if (estimatedPosX1 - Config.TILEX > ((Collideable) d1).getPosX() + x)
-                                estimatedPosX1 -= Config.TILEX;
-                            else estimatedPosX1 = ((Collideable) d1).getPosX() + Config.TILEX;
-                        } else estimatedPosX1 -= Config.TILEX;
+                            if (estimatedPosX1 - moveDistance > ((Collideable) d1).getPosX() + x)
+                                estimatedPosX1 -= moveDistance;
+                            else estimatedPosX1 = ((Collideable) d1).getPosX() + x;
+                        } else estimatedPosX1 -= moveDistance;
                         if (d2 != null && d2 instanceof Collideable) {
-                            if (estimatedPosX2 - Config.TILEX > ((Collideable) d2).getPosX() + x)
-                                estimatedPosX2 -= Config.TILEX;
-                            else estimatedPosX2 = ((Collideable) d2).getPosX() + Config.TILEX;
+                            if (estimatedPosX2 - moveDistance > ((Collideable) d2).getPosX() + x)
+                                estimatedPosX2 -= moveDistance;
+                            else estimatedPosX2 = ((Collideable) d2).getPosX() + x;
                         } else estimatedPosX2 -= Config.TILEX;
                         if (posX == Math.max(estimatedPosX1, estimatedPosX2)) break;
                         else posX = Math.max(estimatedPosX1, estimatedPosX2);
@@ -162,18 +164,19 @@ public class MyTank implements Tank, Drawable, Collideable {
                     int estimatedPosY1 = posY;
                     int estimatedPosY2 = posY;
                     for (int checkDistance = 0; checkDistance < equipmentWheel.speed; checkDistance += Config.TILEY) {
+                        int moveDistance = Math.min(Config.TILEY,equipmentWheel.speed-checkDistance);
                         Drawable d1 = map.getMapItem((posX + 1) / Config.TILEX, (posY - checkDistance) / Config.TILEY - 1);
                         Drawable d2 = map.getMapItem((posX + x - 1) / Config.TILEX, (posY - checkDistance) / Config.TILEY - 1);
                         if (d1 != null && d1 instanceof Collideable) {
-                            if (estimatedPosY1 - Config.TILEY > ((Collideable) d1).getPosY() + y)
-                                estimatedPosY1 -= Config.TILEY;
-                            else estimatedPosY1 = ((Collideable) d1).getPosY() + Config.TILEY;
-                        } else estimatedPosY1 -= Config.TILEY;
+                            if (estimatedPosY1 - moveDistance > ((Collideable) d1).getPosY() + y)
+                                estimatedPosY1 -= moveDistance;
+                            else estimatedPosY1 = ((Collideable) d1).getPosY() + y;
+                        } else estimatedPosY1 -= moveDistance;
                         if (d2 != null && d2 instanceof Collideable) {
-                            if (estimatedPosY2 - Config.TILEY > ((Collideable) d2).getPosY() + y)
-                                estimatedPosY2 -= Config.TILEY;
-                            else estimatedPosY2 = ((Collideable) d2).getPosY() + Config.TILEY;
-                        } else estimatedPosY2 -= Config.TILEX;
+                            if (estimatedPosY2 - moveDistance > ((Collideable) d2).getPosY() + y)
+                                estimatedPosY2 -= moveDistance;
+                            else estimatedPosY2 = ((Collideable) d2).getPosY() + y;
+                        } else estimatedPosY2 -= moveDistance;
                         if (posY == Math.max(estimatedPosY1, estimatedPosY2)) break;
                         else posY = Math.max(estimatedPosY1, estimatedPosY2);
                     }
@@ -187,18 +190,19 @@ public class MyTank implements Tank, Drawable, Collideable {
                     int estimatedPosY1 = posY;
                     int estimatedPosY2 = posY;
                     for (int checkDistance = 0; checkDistance < equipmentWheel.speed; checkDistance += Config.TILEX) {
+                        int moveDistance = Math.min(Config.TILEY,equipmentWheel.speed-checkDistance);
                         Drawable d1 = map.getMapItem( (posX + 1) / Config.TILEX,(posY + y + checkDistance) / Config.TILEY);
                         Drawable d2 = map.getMapItem((posX + x - 1) / Config.TILEX, (posY + y + checkDistance) / Config.TILEY);
                         if (d1 != null && d1 instanceof Collideable) {
-                            if (estimatedPosY1 + Config.TILEY < ((Collideable) d1).getPosY() - y)
-                                estimatedPosY1 += Config.TILEY;
+                            if (estimatedPosY1 + moveDistance < ((Collideable) d1).getPosY() - y)
+                                estimatedPosY1 += moveDistance;
                             else estimatedPosY1 = ((Collideable) d1).getPosY() - y;
-                        } else estimatedPosY1 += Config.TILEY;
+                        } else estimatedPosY1 += moveDistance;
                         if (d2 != null && d2 instanceof Collideable) {
-                            if (estimatedPosY2 + Config.TILEY < ((Collideable) d2).getPosY() - y)
-                                estimatedPosY2 += Config.TILEY;
+                            if (estimatedPosY2 + moveDistance < ((Collideable) d2).getPosY() - y)
+                                estimatedPosY2 += moveDistance;
                             else estimatedPosY2 = ((Collideable) d2).getPosY() - y;
-                        } else estimatedPosY2 += Config.TILEY;
+                        } else estimatedPosY2 += moveDistance;
                         if (posY == Math.min(estimatedPosY1, estimatedPosY2)) break;
                         else posY = Math.min(estimatedPosY1, estimatedPosY2);
                     }
