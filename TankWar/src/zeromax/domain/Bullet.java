@@ -1,15 +1,12 @@
 package zeromax.domain;
 
-import zeromax.interfaces.Config;
-import zeromax.interfaces.Drawable;
-import zeromax.interfaces.Facing;
-import zeromax.interfaces.Tank;
+import zeromax.interfaces.*;
 import zeromax.utils.DrawUtils;
 import zeromax.utils.SoundUtils;
 
 import java.io.IOException;
 
-public class Bullet implements Drawable {
+public class Bullet implements Drawable, Collideable {
     private int damage;
     private int speed;
     private int interval;//使用fps计数
@@ -104,7 +101,25 @@ public class Bullet implements Drawable {
             e.printStackTrace();
         }
     }
+    @Override
+    public int getPosX() {
+        return posX;
+    }
 
+    @Override
+    public int getPosY() {
+        return posY;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
     public void move(){
         switch(facing){
             case WEST: posX -= speed;break;

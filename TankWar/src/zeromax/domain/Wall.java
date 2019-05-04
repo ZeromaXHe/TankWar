@@ -1,12 +1,13 @@
 package zeromax.domain;
 
+import zeromax.interfaces.Collideable;
 import zeromax.interfaces.Config;
 import zeromax.interfaces.Drawable;
 import zeromax.utils.DrawUtils;
 
 import java.io.IOException;
 
-public class Wall implements Drawable {
+public class Wall implements Drawable, Collideable {
     private int healthyPoint;
     private int posX;
     private int posY;
@@ -32,5 +33,24 @@ public class Wall implements Drawable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public int getPosX() {
+        return posX;
+    }
+
+    @Override
+    public int getPosY() {
+        return posY;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
     }
 }

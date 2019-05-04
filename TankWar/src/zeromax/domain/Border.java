@@ -1,22 +1,22 @@
 package zeromax.domain;
 
+import zeromax.interfaces.Collideable;
 import zeromax.interfaces.Config;
 import zeromax.interfaces.Drawable;
 import zeromax.utils.DrawUtils;
 
 import java.io.IOException;
 
-public class Grass implements Drawable {
-    //private int healthyPoint;
+public class Border implements Drawable, Collideable {
+    private int healthyPoint;
     private int posX;
     private int posY;
     private int x = Config.TILEX;
     private int y = Config.TILEY;
-    private String imgPath = "TankWar\\res\\img/grass.gif";
+    private String imgPath = "TankWar\\res\\img/steel.gif";
+    private static final int displayPriority= 0;
 
-    private static final int displayPriority= 1;
-
-    public Grass(int posX, int posY){
+    public Border(int posX, int posY){
         this.posX = posX;
         this.posY = posY;
     }
@@ -33,5 +33,25 @@ public class Grass implements Drawable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public int getPosX() {
+        return posX;
+    }
+
+    @Override
+    public int getPosY() {
+        return posY;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
     }
 }

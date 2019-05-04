@@ -30,25 +30,9 @@ public class GameWindowController extends Window {
     @Override
     protected void onCreate() {
 
-        int[][] mapItem = map.getMapItem();
         for (int i = 0; i < map.getWidth(); i++) {
             for (int j = 0; j < map.getHeight(); j++) {
-                switch (mapItem[i][j]) {
-                    case 0:
-                        break;
-                    case 1:
-                        list.add(new Wall(Config.TILEX * i, Config.TILEY * j));
-                        break;
-                    case 2:
-                        list.add(new Steel(Config.TILEX * i, Config.TILEY * j));
-                        break;
-                    case 3:
-                        list.add(new Grass(Config.TILEX * i, Config.TILEY * j));
-                        break;
-                    case 4:
-                        list.add(new Water(Config.TILEX * i, Config.TILEY * j));
-                        break;
-                }
+                if(map.getMapItem(i,j)!=null)list.add(map.getMapItem(i,j));
             }
         }
         mt = new MyTank(Config.WIDTH / 2, Config.HEIGHT / 2);
@@ -65,19 +49,19 @@ public class GameWindowController extends Window {
         switch (key) {
             case Keyboard.KEY_W:
                 System.out.println("坦克在向北移动");
-                mt.move(Facing.NORTH);
+                mt.move(Facing.NORTH, map);
                 break;
             case Keyboard.KEY_A:
                 System.out.println("坦克在向西移动");
-                mt.move(Facing.WEST);
+                mt.move(Facing.WEST, map);
                 break;
             case Keyboard.KEY_S:
                 System.out.println("坦克在向南移动");
-                mt.move(Facing.SOUTH);
+                mt.move(Facing.SOUTH, map);
                 break;
             case Keyboard.KEY_D:
                 System.out.println("坦克在向东移动");
-                mt.move(Facing.EAST);
+                mt.move(Facing.EAST, map);
                 break;
             case Keyboard.KEY_J:
                 Bullet bullet = mt.shoot();

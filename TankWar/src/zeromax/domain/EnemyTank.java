@@ -4,11 +4,13 @@ import zeromax.equipment.Barrel;
 import zeromax.equipment.NormalBarrel;
 import zeromax.equipment.NormalWheel;
 import zeromax.equipment.Wheel;
+import zeromax.interfaces.Collideable;
 import zeromax.interfaces.Drawable;
 import zeromax.interfaces.Facing;
 import zeromax.interfaces.Tank;
+import zeromax.model.Map;
 
-public class EnemyTank implements Tank, Drawable {
+public class EnemyTank implements Tank, Drawable, Collideable {
     private int killCount;
     private Barrel equipmentBarrel;
     private int equipmentArmor;
@@ -81,7 +83,7 @@ public class EnemyTank implements Tank, Drawable {
     }
 
     @Override
-    public void move(Facing facing) {
+    public void move(Facing facing, Map map) {
 
     }
 
