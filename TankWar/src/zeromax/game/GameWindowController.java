@@ -20,6 +20,7 @@ public class GameWindowController extends Window {
     Map map;
     CopyOnWriteArrayList<Drawable> list = new CopyOnWriteArrayList<>();
     MyTank mt;
+    EnemyTank[] et = new EnemyTank[2];
 
     public GameWindowController(String title, int width, int height, int fps) {
         super(title, width, height, fps);
@@ -34,8 +35,13 @@ public class GameWindowController extends Window {
                 if(map.getMapItem(i,j)!=null)list.add(map.getMapItem(i,j));
             }
         }
-        mt = new MyTank(0, 0);
+        mt = new MyTank(5*Config.TILEX, Config.HEIGHT-Config.TILEY);
         list.add(mt);
+        et[0] = new EnemyTank(0,0);
+        et[1] = new EnemyTank(Config.WIDTH-Config.TILEX,0);
+        for(EnemyTank enemy : et){
+            list.add(enemy);
+        }
     }
 
     @Override
@@ -67,10 +73,10 @@ public class GameWindowController extends Window {
                 if (bullet != null) {
                     System.out.println("坦克正在开火");
                     list.add(bullet);
-                    break;
                 } else {
                     System.out.println("正在重新装填，无法开火");
                 }
+                break;
 
         }
     }
@@ -96,7 +102,16 @@ public class GameWindowController extends Window {
             }
             if (drawable instanceof Tank) {
                 ((Tank) drawable).getEquipmentBarrel().addIntervalCount();
+                if(drawable instanceof EnemyTank){
+                    ((EnemyTank) drawable).move(((EnemyTank) drawable).getNowFacing(),map);
+                    if(((EnemyTank) drawable).getEquipmentBarrel().isShootable()){
+                        Bullet bullet = ((EnemyTank) drawable).shoot();
+                        System.out.println("敌方正在开火");
+                        list.add(bullet);
+                    }
+                }
             }
+
             if(drawable instanceof Clearable){
                 if(((Clearable) drawable).isToBeCleared()){
                     list.remove(drawable);
