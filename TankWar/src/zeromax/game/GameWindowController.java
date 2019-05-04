@@ -87,11 +87,6 @@ public class GameWindowController extends Window {
             if (drawable instanceof Bullet) {
                 if (((Bullet) drawable).isToBeCleared()) {
                     list.remove(drawable);
-                    try {
-                        SoundUtils.play("TankWar/res/snd/hit.wav");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     continue;
                 }
                 else ((Bullet) drawable).move(map);
