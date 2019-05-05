@@ -6,8 +6,9 @@ import zeromax.utils.DrawUtils;
 import zeromax.utils.SoundUtils;
 
 import java.io.IOException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Bullet implements Drawable, Collideable, Hitable, Clearable {
+public class Bullet implements Drawable, Hitable, Clearable, Moveable {
     private int damage;
     private int speed;
     private int interval;//使用fps计数
@@ -20,19 +21,16 @@ public class Bullet implements Drawable, Collideable, Hitable, Clearable {
     private boolean toBeCleared = false;
     private boolean initialMove = false;
     private Hitable hit;
+    private Tank shotFrom;
 
     private String imgPath = "TankWar\\res\\img/bullet_u.gif";
-
-    public Bullet() {
-        damage = 10;
-        speed = 5;
-        interval = 10;
-    }
 
     public Bullet(Tank tank) {
         damage = 10;
         speed = 5;
         interval = 10;
+
+        shotFrom = tank;
 
         facing = tank.getNowFacing();
         switch (facing) {
@@ -107,8 +105,16 @@ public class Bullet implements Drawable, Collideable, Hitable, Clearable {
         }
     }
 
+    public Tank getShotFrom() {
+        return shotFrom;
+    }
+
     public Hitable getHit() {
         return hit;
+    }
+
+    public void setHit(Hitable hit) {
+        this.hit = hit;
     }
 
     public int getDamage() {
@@ -137,7 +143,7 @@ public class Bullet implements Drawable, Collideable, Hitable, Clearable {
 
     @Override
     public Blast showBlast() {
-        return new Blast(posX,posY);
+        return new Blast(posX, posY);
     }
 
     @Override
@@ -150,11 +156,17 @@ public class Bullet implements Drawable, Collideable, Hitable, Clearable {
         return toBeCleared;
     }
 
-    public void move(Map map) {
-        hitCheck(map, facing);
+    public void setToBeCleared(boolean toBeCleared) {
+        this.toBeCleared = toBeCleared;
     }
 
-    private void hitCheck(Map map, Facing facing) {
+    @Override
+    public void move(Facing face, Map map, CopyOnWriteArrayList<Moveable> listMove) {
+        hitCheck(map, facing, listMove);
+    }
+
+    //TODO:还是这里屎一样的代码，必须重构了，不然根本没办法实现Moveable、Hitable之间的碰撞
+    private void hitCheck(Map map, Facing facing, CopyOnWriteArrayList<Moveable> listMove) {
         int nowi1 = (posX + 1) / Config.TILEX;
         int nowj1 = (posY + 1) / Config.TILEY;
         int nowi2 = (posX + x - 1) / Config.TILEY;
@@ -289,7 +301,7 @@ public class Bullet implements Drawable, Collideable, Hitable, Clearable {
 
     }
 
-    private void hitSound(){
+    private void hitSound() {
         try {
             SoundUtils.play("TankWar/res/snd/hit.wav");
         } catch (IOException e) {

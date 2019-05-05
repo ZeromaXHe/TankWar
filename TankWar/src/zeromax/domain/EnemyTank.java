@@ -3,14 +3,16 @@ package zeromax.domain;
 import zeromax.equipment.*;
 import zeromax.interfaces.*;
 import zeromax.model.Map;
+import zeromax.utils.CollisionUtils;
 import zeromax.utils.DrawUtils;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static zeromax.interfaces.Facing.*;
 
-public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearable {
+public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearable, Moveable {
     private int killCount;
     private Barrel equipmentBarrel;
     private int equipmentArmor;
@@ -99,10 +101,10 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
     }
 
     @Override
-    public void move(Facing facing, Map map) {
-        if (collideCheck(map, facing)
-                || ((facing==EAST||facing==WEST) && posX % Config.TILEX == 0)
-                || ((facing==NORTH||facing==SOUTH) && posY % Config.TILEY == 0)) {
+    public void move(Facing facing, Map map, CopyOnWriteArrayList<Moveable> listMove) {
+        if (collideCheck(map, facing, listMove)
+                || ((facing == EAST || facing == WEST) && posX % Config.TILEX == 0)
+                || ((facing == NORTH || facing == SOUTH) && posY % Config.TILEY == 0)) {
             Random rand = new Random();
             switch (facing) {
                 case SOUTH:
@@ -129,7 +131,8 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
         }
     }
 
-    private boolean collideCheck(Map map, Facing facing) {
+    //TODO:还是这里屎一样的代码，必须重构了，不然根本没办法实现Moveable、Hitable之间的碰撞。加入注释掉的代码就会bug
+    private boolean collideCheck(Map map, Facing facing, CopyOnWriteArrayList<Moveable> listMove) {
         boolean turn = false;
         int nowi1 = (posX + 1) / Config.TILEX;
         int nowj1 = (posY + 1) / Config.TILEY;
@@ -159,6 +162,29 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
                     }
                     if (j != nowj2 && j == endj1) posY -= equipmentWheel.speed;
                 }
+//                for (Moveable move : listMove) {
+//                    if (move == this) continue;
+//                    if (move instanceof Bullet) {
+//                        if (((Bullet) move).getShotFrom() == this) continue;
+//                        else {
+//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
+//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
+//                                    endi1, endj1, x, nowj1 - posY)) {
+//                                ((Bullet) move).setHit(this);
+//                                ((Bullet) move).setToBeCleared(true);
+//                                posY = ((Bullet) move).getPosY() + ((Bullet) move).getY();
+//
+//                            }
+//                        }
+//                    } else if (move instanceof Collideable) {
+//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
+//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
+//                                endi1, endj1, x, nowj1 - posY)) {
+//                            posY = ((Collideable) move).getPosY() + ((Collideable) move).getY();
+//                            turn = true;
+//                        }
+//                    }
+//                }
             }
             break;
             case SOUTH: {
@@ -179,6 +205,29 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
                     }
                     if (j != nowj1 && j == endj2) posY += equipmentWheel.speed;
                 }
+//                for (Moveable move : listMove) {
+//                    if (move == this) continue;
+//                    if (move instanceof Bullet) {
+//                        if (((Bullet) move).getShotFrom() == this) continue;
+//                        else {
+//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
+//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
+//                                    nowi1, nowj2, x, posY - nowj1)) {
+//                                ((Bullet) move).setHit(this);
+//                                ((Bullet) move).setToBeCleared(true);
+//                                posY = ((Collideable) move).getPosY() - y;
+//
+//                            }
+//                        }
+//                    } else if (move instanceof Collideable) {
+//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
+//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
+//                                nowi1, nowj2, x, posY - nowj1)) {
+//                            posY = ((Collideable) move).getPosY() - y;
+//                            turn = true;
+//                        }
+//                    }
+//                }
             }
             break;
             case WEST: {
@@ -199,6 +248,29 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
                     }
                     if (i != nowi2 && i == endi1) posX -= equipmentWheel.speed;
                 }
+//                for (Moveable move : listMove) {
+//                    if (move == this) continue;
+//                    if (move instanceof Bullet) {
+//                        if (((Bullet) move).getShotFrom() == this) continue;
+//                        else {
+//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
+//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
+//                                    endi1, endj1, nowi1 - posX, y)) {
+//                                ((Bullet) move).setHit(this);
+//                                ((Bullet) move).setToBeCleared(true);
+//                                posX = ((Collideable) move).getPosX() + ((Collideable) move).getX();
+//
+//                            }
+//                        }
+//                    } else if (move instanceof Collideable) {
+//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
+//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
+//                                endi1, endj1, nowi1 - posX, y)) {
+//                            posX = ((Collideable) move).getPosX() + ((Collideable) move).getX();
+//                            turn = true;
+//                        }
+//                    }
+//                }
             }
             break;
             case EAST: {
@@ -219,6 +291,30 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
                     }
                     if (i != nowi1 && i == endi2) posX += equipmentWheel.speed;
                 }
+//                for (Moveable move : listMove) {
+//                    if (move == this) continue;
+//                    if (move instanceof Bullet) {
+//                        if (((Bullet) move).getShotFrom() == this) continue;
+//                        else {
+//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
+//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
+//                                    nowi2, nowj1, posX - nowi1, y)) {
+//                                ((Bullet) move).setHit(this);
+//                                ((Bullet) move).setToBeCleared(true);
+//                                posX = ((Collideable) move).getPosX() - x;
+//
+//                            }
+//                        }
+//                    } else if (move instanceof Collideable) {
+//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
+//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
+//                                nowi2, nowj1, posX - nowi1, y)) {
+//
+//                            posX = ((Collideable) move).getPosX() - x;
+//                            turn = true;
+//                        }
+//                    }
+//                }
             }
             break;
         }

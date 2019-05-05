@@ -19,6 +19,7 @@ public class GameWindowController extends Window {
     UI ui = new UI();
     Map map;
     CopyOnWriteArrayList<Drawable> list = new CopyOnWriteArrayList<>();
+    CopyOnWriteArrayList<Moveable> listMove = new CopyOnWriteArrayList<>();
     MyTank mt;
     EnemyTank[] et = new EnemyTank[2];
 
@@ -37,10 +38,12 @@ public class GameWindowController extends Window {
         }
         mt = new MyTank(5*Config.TILEX, Config.HEIGHT-Config.TILEY);
         list.add(mt);
+        listMove.add(mt);
         et[0] = new EnemyTank(0,0);
         et[1] = new EnemyTank(Config.WIDTH-Config.TILEX,0);
         for(EnemyTank enemy : et){
             list.add(enemy);
+            listMove.add(enemy);
         }
     }
 
@@ -54,19 +57,19 @@ public class GameWindowController extends Window {
         switch (key) {
             case Keyboard.KEY_W:
                 System.out.println("坦克在向北移动");
-                mt.move(Facing.NORTH, map);
+                mt.move(Facing.NORTH, map, listMove);
                 break;
             case Keyboard.KEY_A:
                 System.out.println("坦克在向西移动");
-                mt.move(Facing.WEST, map);
+                mt.move(Facing.WEST, map, listMove);
                 break;
             case Keyboard.KEY_S:
                 System.out.println("坦克在向南移动");
-                mt.move(Facing.SOUTH, map);
+                mt.move(Facing.SOUTH, map, listMove);
                 break;
             case Keyboard.KEY_D:
                 System.out.println("坦克在向东移动");
-                mt.move(Facing.EAST, map);
+                mt.move(Facing.EAST, map, listMove);
                 break;
             case Keyboard.KEY_J:
                 Bullet bullet = mt.shoot();
@@ -88,7 +91,7 @@ public class GameWindowController extends Window {
         Collections.sort(list, Comparator.comparing(Drawable::getDisplayPriority));//方法引用简化了lambda表达式：(o1,o2)->{return o1.getDisplayPriority() - o2.getDisplayPriority();});
         for (Drawable drawable : list) {
             if (drawable instanceof Bullet) {
-                ((Bullet) drawable).move(map);
+                ((Bullet) drawable).move(null,map, listMove);
                 if (((Bullet) drawable).isToBeCleared()) {
                     Hitable hit = ((Bullet) drawable).getHit();
                     Blast blast = hit.showBlast();
@@ -103,7 +106,7 @@ public class GameWindowController extends Window {
             if (drawable instanceof Tank) {
                 ((Tank) drawable).getEquipmentBarrel().addIntervalCount();
                 if(drawable instanceof EnemyTank){
-                    ((EnemyTank) drawable).move(((EnemyTank) drawable).getNowFacing(),map);
+                    ((EnemyTank) drawable).move(((EnemyTank) drawable).getNowFacing(),map, listMove);
                     if(((EnemyTank) drawable).getEquipmentBarrel().isShootable()){
                         Bullet bullet = ((EnemyTank) drawable).shoot();
                         System.out.println("敌方正在开火");
@@ -114,6 +117,7 @@ public class GameWindowController extends Window {
 
             if(drawable instanceof Clearable){
                 if(((Clearable) drawable).isToBeCleared()){
+                    if(drawable instanceof Moveable) listMove.remove(drawable);
                     list.remove(drawable);
                     continue;
                 }

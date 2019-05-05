@@ -5,12 +5,17 @@ import zeromax.equipment.Barrel;
 import zeromax.equipment.Wheel;
 import zeromax.model.Map;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public interface Tank {
-    void move(Facing facing, Map map);
+    void move(Facing facing, Map map, CopyOnWriteArrayList<Moveable> listMove);
+
     Bullet shoot();
+
     void pickUpItem();
 
     Barrel getEquipmentBarrel();
+
     Wheel getEquipmentWheel();
 
     int getPosX();
