@@ -33,11 +33,11 @@ public class Map {
 
     public Drawable getMapItem(int i, int j) {
         if (i < width && i >= 0 && j < height && j >= 0) return mapItem[i][j];
-        else return BORDER=new Border(i*Config.TILEX,j*Config.TILEY);
+        else return BORDER = new Border(i * Config.TILEX, j * Config.TILEY);
     }
 
-    public void setMapItem(int i,int j,Drawable d) {
-        mapItem[i][j] = d;
+    public void setMapItem(int i, int j, Drawable d) {
+        if (i >= 0 && j >= 0) mapItem[i][j] = d;
     }
 
     private void init() {

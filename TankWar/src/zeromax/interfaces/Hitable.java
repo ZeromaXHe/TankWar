@@ -3,15 +3,7 @@ package zeromax.interfaces;
 import zeromax.domain.Blast;
 import zeromax.domain.Bullet;
 
-public interface Hitable {
-
-    int getPosX();
-
-    int getPosY();
-
-    int getX();
-
-    int getY();
+public interface Hitable extends Sizeable{
 
     Blast showBlast();
 

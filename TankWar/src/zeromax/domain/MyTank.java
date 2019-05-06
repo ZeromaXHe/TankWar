@@ -12,7 +12,7 @@ import zeromax.utils.DrawUtils;
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
+public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable, Clearable {
     private int killCount;
     private Barrel equipmentBarrel;
     private int equipmentArmor;
@@ -20,13 +20,14 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
     private int equipmentLight;
     private String imgPath = "TankWar\\res\\img/tank_u.gif";
     private static final int displayPriority = 0;
-    private int healthPoint = 100;
+    private int healthPoint = 10;
 
     private int posX;
     private int posY;
     private int x;
     private int y;
-    private Facing nowFacing;
+    private Facing facing;
+    private boolean toBeCleared = false;
 
     public MyTank(int posX, int posY) {
 
@@ -35,7 +36,7 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
         equipmentArmor = 0;
         equipmentWheel = new NormalWheel();
 
-        nowFacing = Facing.NORTH;
+        facing = Facing.NORTH;
         this.posX = posX;
         this.posY = posY;
         try {
@@ -100,12 +101,15 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
     public boolean decreaseHP(Bullet bullet) {
         healthPoint -= bullet.getDamage();
         if (healthPoint > 0) return false;
-        else return true;
+        else {
+            toBeCleared = true;
+            return true;
+        }
     }
 
     @Override
-    public Facing getNowFacing() {
-        return nowFacing;
+    public Facing getFacing() {
+        return facing;
     }
 
 
@@ -130,32 +134,32 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
     public void move(Facing facing, Map map, CopyOnWriteArrayList<Moveable> listMove) {
         switch (facing) {
             case EAST:
-                if (nowFacing != facing) {
-                    nowFacing = facing;
+                if (this.facing != facing) {
+                    this.facing = facing;
                     imgPath = "TankWar\\res\\img/tank_r.gif";
                 } else {
                     CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
             case WEST:
-                if (nowFacing != facing) {
-                    nowFacing = facing;
+                if (this.facing != facing) {
+                    this.facing = facing;
                     imgPath = "TankWar\\res\\img/tank_l.gif";
                 } else {
                     CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
             case NORTH:
-                if (nowFacing != facing) {
-                    nowFacing = facing;
+                if (this.facing != facing) {
+                    this.facing = facing;
                     imgPath = "TankWar\\res\\img/tank_u.gif";
                 } else {
                     CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
             case SOUTH:
-                if (nowFacing != facing) {
-                    nowFacing = facing;
+                if (this.facing != facing) {
+                    this.facing = facing;
                     imgPath = "TankWar\\res\\img/tank_d.gif";
                 } else {
                     CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
@@ -170,4 +174,8 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
 
     }
 
+    @Override
+    public boolean isToBeCleared() {
+        return toBeCleared;
+    }
 }

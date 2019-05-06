@@ -20,7 +20,7 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
     private int equipmentLight;
 
     private int botAI;
-    private int healthPoint = 100;
+    private int healthPoint = 10;
     private boolean toBeCleared = false;
 
     private int posX;
@@ -85,7 +85,7 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
     }
 
     @Override
-    public Facing getNowFacing() {
+    public Facing getFacing() {
         return nowFacing;
     }
 

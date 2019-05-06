@@ -26,5 +26,5 @@ public interface Tank {
 
     int getY();
 
-    Facing getNowFacing();
+    Facing getFacing();
 }
