@@ -134,7 +134,7 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_r.gif";
                 } else {
-                    CollisionUtils.collideCheck(this, map, facing, equipmentWheel.speed);
+                    CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
             case WEST:
@@ -142,7 +142,7 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_l.gif";
                 } else {
-                    CollisionUtils.collideCheck(this, map, facing, equipmentWheel.speed);
+                    CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
             case NORTH:
@@ -150,7 +150,7 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_u.gif";
                 } else {
-                    CollisionUtils.collideCheck(this, map, facing, equipmentWheel.speed);
+                    CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
             case SOUTH:
@@ -158,7 +158,7 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable {
                     nowFacing = facing;
                     imgPath = "TankWar\\res\\img/tank_d.gif";
                 } else {
-                    CollisionUtils.collideCheck(this, map, facing, equipmentWheel.speed);
+                    CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed);
                 }
                 break;
         }

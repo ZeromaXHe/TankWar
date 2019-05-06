@@ -1,6 +1,7 @@
 package zeromax.utils;
 
 import zeromax.domain.Bullet;
+import zeromax.domain.MyTank;
 import zeromax.interfaces.*;
 import zeromax.model.Map;
 
@@ -46,13 +47,30 @@ public class CollisionUtils {
      * @param distance 移动距离
      * @return 是否碰撞了
      */
-    public static boolean collideCheck(Moveable moveable, Map map, Facing facing, int distance) {
+    public static boolean collideCheck(Moveable moveable, Map map, Facing facing, CopyOnWriteArrayList<Moveable> listMove, int distance) {
         int[] mapCheck = collideCheckMap(moveable, map, facing, distance);
-        if (facing == Facing.NORTH || facing == Facing.SOUTH) moveable.setPosY(mapCheck[0]);
-        else moveable.setPosX(mapCheck[0]);
-        if (mapCheck[1] == 1)
+        int[] listMoveCheck = collideCheckListmove(moveable,map,facing, listMove, distance);
+
+        if (mapCheck[1] == 1||listMoveCheck[1]==1) {
+            if(moveable instanceof MyTank||listMoveCheck[1]==0){
+                switch (facing){
+                    case NORTH:moveable.setPosY(Math.max(mapCheck[0],listMoveCheck[0]));break;
+                    case SOUTH:moveable.setPosY(Math.min(mapCheck[0],listMoveCheck[0]));break;
+                    case WEST:moveable.setPosX(Math.max(mapCheck[0],listMoveCheck[0]));break;
+                    case EAST:moveable.setPosX(Math.min(mapCheck[0],listMoveCheck[0]));break;
+                }
+            }
             return true;
-        else return false;
+        }
+        else {
+            switch (facing){
+                case NORTH:moveable.setPosY(Math.max(mapCheck[0],listMoveCheck[0]));break;
+                case SOUTH:moveable.setPosY(Math.min(mapCheck[0],listMoveCheck[0]));break;
+                case WEST:moveable.setPosX(Math.max(mapCheck[0],listMoveCheck[0]));break;
+                case EAST:moveable.setPosX(Math.min(mapCheck[0],listMoveCheck[0]));break;
+            }
+            return false;
+        }
     }
 
     private static int[] collideCheckMap(Moveable moveable, Map map, Facing facing, int distance) {
@@ -154,14 +172,15 @@ public class CollisionUtils {
                     if (CollisionUtils.isCollisionWithRect(
                             move.getPosX(), move.getPosY(), move.getX(), move.getY(),
                             collideBox[0], collideBox[1], collideBox[2], collideBox[3])) {
-                        ((Bullet) move).setHit((Hitable) moveable);
-                        ((Bullet) move).setToBeCleared(true);
+//                        ((Bullet) move).setHit((Hitable) moveable);
+//                        ((Bullet) move).setToBeCleared(true);
 
                         ans[0] = endingPosAftColSth(moveable, move, facing);
 
                     }
                 }
-            } else if (move instanceof Collideable) {
+            }
+            if (move instanceof Collideable) {
                 if (CollisionUtils.isCollisionWithRect(
                         move.getPosX(), move.getPosY(), move.getX(), move.getY(),
                         collideBox[0], collideBox[1], collideBox[2], collideBox[3])) {

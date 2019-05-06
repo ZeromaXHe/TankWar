@@ -110,7 +110,7 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
 
     @Override
     public void move(Facing facing, Map map, CopyOnWriteArrayList<Moveable> listMove) {
-        if (CollisionUtils.collideCheck(this, map, facing, equipmentWheel.speed)
+        if (CollisionUtils.collideCheck(this, map, facing, listMove, equipmentWheel.speed)
                 || ((facing == EAST || facing == WEST) && posX % Config.TILEX == 0)
                 || ((facing == NORTH || facing == SOUTH) && posY % Config.TILEY == 0)) {
             Random rand = new Random();

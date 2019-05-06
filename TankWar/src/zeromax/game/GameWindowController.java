@@ -21,7 +21,7 @@ public class GameWindowController extends Window {
     CopyOnWriteArrayList<Drawable> list = new CopyOnWriteArrayList<>();
     CopyOnWriteArrayList<Moveable> listMove = new CopyOnWriteArrayList<>();
     MyTank mt;
-    EnemyTank[] et = new EnemyTank[2];
+    EnemyTank[] et = new EnemyTank[3];
 
     public GameWindowController(String title, int width, int height, int fps) {
         super(title, width, height, fps);
@@ -41,6 +41,7 @@ public class GameWindowController extends Window {
         listMove.add(mt);
         et[0] = new EnemyTank(0,0);
         et[1] = new EnemyTank(Config.WIDTH-Config.TILEX,0);
+        et[2] = new EnemyTank(Config.TILEX,0);
         for(EnemyTank enemy : et){
             list.add(enemy);
             listMove.add(enemy);
