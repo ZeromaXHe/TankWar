@@ -35,7 +35,11 @@ public class GameWindowController extends Window {
 
     @Override
     protected void onCreate() {
-
+        try {
+            SoundUtils.play("TankWar/res/snd/start.wav");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < map.getWidth(); i++) {
             for (int j = 0; j < map.getHeight(); j++) {
                 if (map.getMapItem(i, j) != null) list.add(map.getMapItem(i, j));
@@ -164,6 +168,11 @@ public class GameWindowController extends Window {
                     if (drawable == mt) {
                         gameover = true;
                     } else if (drawable instanceof EnemyTank) {
+                        try {
+                            SoundUtils.play("TankWar/res/snd/add.wav");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         enemyCount--;
                         if (enemyCount <= 0) gamewin = true;
                     }
