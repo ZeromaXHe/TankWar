@@ -50,8 +50,7 @@ public class SoundUtils {
 	/**
 	 * 停止播放音乐
 	 * 
-	 * @param format
-	 *            音乐格式 WAV OGG 等
+	 * format 音乐格式 WAV OGG 等
 	 * @param res
 	 *            音乐文件路径
 	 */

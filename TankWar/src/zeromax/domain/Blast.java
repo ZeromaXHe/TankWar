@@ -24,7 +24,7 @@ public class Blast implements Drawable, Clearable {
             "TankWar/res/img/blast_8.gif"};
     private int index;
 
-    public Blast(int posX,int posY){
+    Blast(int posX,int posY){
         index = 0;
         try {
             int[] arr = DrawUtils.getSize(imgPath[index]);

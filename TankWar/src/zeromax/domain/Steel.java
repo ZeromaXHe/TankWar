@@ -11,7 +11,7 @@ public class Steel implements Drawable, Collideable, Hitable, Clearable {
     private int posY;
     private int x = Config.TILEX;
     private int y = Config.TILEY;
-    private String imgPath = "TankWar\\res\\img/steel.gif";
+    private static final String imgPath = "TankWar\\res\\img/steel.gif";
     private static final int displayPriority = 0;
     private boolean toBeCleared = false;
 

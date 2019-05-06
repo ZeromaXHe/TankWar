@@ -12,11 +12,11 @@ public interface Tank {
 
     Bullet shoot();
 
-    void pickUpItem();
+    //void pickUpItem();
 
     Barrel getEquipmentBarrel();
 
-    Wheel getEquipmentWheel();
+    //Wheel getEquipmentWheel();
 
     int getPosX();
 

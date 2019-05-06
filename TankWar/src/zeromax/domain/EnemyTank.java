@@ -13,13 +13,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static zeromax.interfaces.Facing.*;
 
 public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearable, Moveable {
-    private int killCount;
+    //private int killCount;
     private Barrel equipmentBarrel;
-    private int equipmentArmor;
+    //private int equipmentArmor;
     private Wheel equipmentWheel;
-    private int equipmentLight;
+    //private int equipmentLight;
 
-    private int botAI;
+    //private int botAI;
     private int healthPoint = 10;
     private boolean toBeCleared = false;
 
@@ -30,23 +30,19 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
     private Facing nowFacing;
     private static final int displayPriority = 0;
 
-    private String imgPath = "TankWar/res/img/enemy_1_d.gif";
+    private String imgPath;
 
     public EnemyTank(int posX, int posY) {
-        this(posX, posY, 0);
-    }
-
-    public EnemyTank(int posX, int posY, int botAI) {
         this.posX = posX;
         this.posY = posY;
-        killCount = 0;
+        //killCount = 0;
         equipmentBarrel = new NormalBarrel();
-        equipmentArmor = 0;
+        //equipmentArmor = 0;
         equipmentWheel = new EnemyNormalWheel();
-        equipmentLight = 0;
+        //equipmentLight = 0;
         nowFacing = SOUTH;
         imgPath = "TankWar/res/img/enemy_1_d.gif";
-        this.botAI = botAI;
+        //this.botAI = botAI;
         try {
             int[] arr = DrawUtils.getSize(imgPath);
             x = arr[0];
@@ -162,18 +158,18 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
         }
     }
 
-    @Override
-    public void pickUpItem() {
-
-    }
+//    @Override
+//    public void pickUpItem() {
+//
+//    }
 
     @Override
     public Barrel getEquipmentBarrel() {
         return equipmentBarrel;
     }
 
-    @Override
-    public Wheel getEquipmentWheel() {
-        return equipmentWheel;
-    }
+//    @Override
+//    public Wheel getEquipmentWheel() {
+//        return equipmentWheel;
+//    }
 }

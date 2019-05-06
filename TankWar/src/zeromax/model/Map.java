@@ -1,7 +1,6 @@
 package zeromax.model;
 
 import zeromax.domain.*;
-import zeromax.interfaces.Collideable;
 import zeromax.interfaces.Config;
 import zeromax.interfaces.Drawable;
 
@@ -11,7 +10,6 @@ public class Map {
     private int width;
     private int height;
     private Drawable[][] mapItem;
-    private Drawable BORDER;
 
     public Map(int width, int height) {
         this.width = width;
@@ -27,13 +25,9 @@ public class Map {
         return height;
     }
 
-    public Drawable[][] getMapItem() {
-        return mapItem;
-    }
-
     public Drawable getMapItem(int i, int j) {
         if (i < width && i >= 0 && j < height && j >= 0) return mapItem[i][j];
-        else return BORDER = new Border(i * Config.TILEX, j * Config.TILEY);
+        else return new Border(i * Config.TILEX, j * Config.TILEY);
     }
 
     public void setMapItem(int i, int j, Drawable d) {

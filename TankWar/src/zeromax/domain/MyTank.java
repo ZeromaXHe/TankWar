@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable, Clearable {
-    private int killCount;
+    //private int killCount;
     private Barrel equipmentBarrel;
-    private int equipmentArmor;
+    //private int equipmentArmor;
     private Wheel equipmentWheel;
-    private int equipmentLight;
+    //private int equipmentLight;
     private String imgPath = "TankWar\\res\\img/tank_u.gif";
     private static final int displayPriority = 0;
     private int healthPoint = 10;
@@ -31,9 +31,9 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable, C
 
     public MyTank(int posX, int posY) {
 
-        killCount = 0;
+        //killCount = 0;
         equipmentBarrel = new NormalBarrel();
-        equipmentArmor = 0;
+        //equipmentArmor = 0;
         equipmentWheel = new NormalWheel();
 
         facing = Facing.NORTH;
@@ -58,9 +58,9 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable, C
         return equipmentBarrel;
     }
 
-    public Wheel getEquipmentWheel() {
-        return equipmentWheel;
-    }
+//    public Wheel getEquipmentWheel() {
+//        return equipmentWheel;
+//    }
 
     @Override
     public int getPosX() {
@@ -169,10 +169,10 @@ public class MyTank implements Tank, Drawable, Collideable, Hitable, Moveable, C
 
     }
 
-    @Override
-    public void pickUpItem() {
-
-    }
+//    @Override
+//    public void pickUpItem() {
+//
+//    }
 
     @Override
     public boolean isToBeCleared() {

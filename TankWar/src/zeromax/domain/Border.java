@@ -9,12 +9,12 @@ import zeromax.utils.DrawUtils;
 import java.io.IOException;
 
 public class Border implements Drawable, Collideable, Hitable {
-    private int healthyPoint;
+    //private int healthyPoint;
     private int posX;
     private int posY;
-    private int x = Config.TILEX;
-    private int y = Config.TILEY;
-    private String imgPath = "TankWar\\res\\img/steel.gif";
+    private static final int x = Config.TILEX;
+    private static final int y = Config.TILEY;
+    private static final String imgPath = "TankWar\\res\\img/steel.gif";
     private static final int displayPriority= 0;
 
     public Border(int posX, int posY){

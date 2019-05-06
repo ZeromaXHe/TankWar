@@ -24,19 +24,16 @@ public class CollisionUtils {
      * @param y2 第二个矩形的 y坐标
      * @param w2 第二个矩形的 宽度
      * @param h2 第二个矩形的 高度
-     * @return
+     * @return 布尔值。true代表碰撞，false表示不碰撞
      */
-    public static boolean isCollisionWithRect(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+    private static boolean isCollisionWithRect(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
         if (x1 >= x2 && x1 >= x2 + w2) {
             return false;
         } else if (x1 <= x2 && x1 + w1 <= x2) {
             return false;
         } else if (y1 >= y2 && y1 >= y2 + h2) {
             return false;
-        } else if (y1 <= y2 && y1 + h1 <= y2) {
-            return false;
-        }
-        return true;
+        } else return !(y1 <= y2 && y1 + h1 <= y2);
     }
 
     /**
@@ -49,16 +46,10 @@ public class CollisionUtils {
      * @return 是否碰撞了
      */
     public static boolean collideCheck(Moveable moveable, Map map, Facing facing, CopyOnWriteArrayList<Moveable> listMove, int distance) {
-//        if(facing == Facing.SOUTH&&moveable instanceof Bullet){
-//            System.out.println("向下飞行的子弹 "+moveable.hashCode()+" 进入碰撞检查主方法");
-//        }
 
         int[] mapCheck = collideCheckMap(moveable, map, facing, distance);
-        int[] listMoveCheck = collideCheckListmove(moveable, map, facing, listMove, distance);
+        int[] listMoveCheck = collideCheckListmove(moveable, facing, listMove, distance);
 
-//        if(facing == Facing.SOUTH&&moveable instanceof Bullet){
-//            System.out.println("子弹 "+moveable.hashCode()+" 的mapCheck[0]为： "+ mapCheck[0] +" ; listMoveCheck[0]为： "+listMoveCheck[0]+" 。");
-//        }
         if (mapCheck[1] == 1 || listMoveCheck[1] == 1) {
             if (moveable instanceof MyTank || moveable instanceof Bullet || listMoveCheck[1] == 0) {
                 switch (facing) {
@@ -97,8 +88,6 @@ public class CollisionUtils {
     }
 
     private static int[] collideCheckMap(Moveable moveable, Map map, Facing facing, int distance) {
-        boolean turn = false;
-        Drawable d;
         int[] collideMapArea = moveCollideMapArea(moveable, facing, distance);
         return endAfterCollideMap(moveable, facing, map, distance, collideMapArea);
 
@@ -108,13 +97,12 @@ public class CollisionUtils {
      * 计算与移动物体间可能发生的碰撞，返回可能结束的地点和是否发生碰撞
      *
      * @param moveable 移动物体
-     * @param map      地图
      * @param facing   面朝方向
      * @param listMove 所有移动物体的列表
      * @param distance 移动距离
      * @return int[2]。[0]为可能移动的距离，[1]是是否发生碰撞。
      */
-    private static int[] collideCheckListmove(Moveable moveable, Map map, Facing facing, CopyOnWriteArrayList<Moveable> listMove, int distance) {
+    private static int[] collideCheckListmove(Moveable moveable , Facing facing, CopyOnWriteArrayList<Moveable> listMove, int distance) {
         int[] collideBox = moveCollideBox(moveable, facing, distance);
 
         return endAfterCollide(moveable, facing, listMove, distance, collideBox);
@@ -135,36 +123,34 @@ public class CollisionUtils {
         int nowj2 = (moveable.getPosY() + moveable.getY() - 1);
         int endi1 = nowi1;
         int endj1 = nowj1;
-        int endi2 = nowi2;
-        int endj2 = nowj2;
+//        int endi2 = nowi2;
+//        int endj2 = nowj2;
 
         switch (facing) {
             case NORTH: {
                 endj1 = (moveable.getPosY() - distance);
-                endj2 = (moveable.getPosY() - distance + moveable.getY());
-                int[] ans = {endi1, endj1, moveable.getX(), nowj1 - moveable.getPosY()};
-                return ans;
+//                endj2 = (moveable.getPosY() - distance + moveable.getY());
+                return new int[]{endi1, endj1, moveable.getX(), nowj1 - moveable.getPosY()};
             }
 
             case SOUTH: {
-                endj1 = (moveable.getPosY() + distance);
-                endj2 = (moveable.getPosY() + distance + moveable.getY());
-                int[] ans = {nowi1, nowj2, moveable.getX(), moveable.getPosY() - nowj1};
-                return ans;
+//                endj1 = (moveable.getPosY() + distance);
+//                endj2 = (moveable.getPosY() + distance + moveable.getY());
+
+                return new int[]{nowi1, nowj2, moveable.getX(), moveable.getPosY() - nowj1};
             }
 
             case WEST: {
                 endi1 = (moveable.getPosX() - distance);
-                endi2 = (moveable.getPosX() - distance + moveable.getX());
-                int[] ans = {endi1, endj1, nowi1 - moveable.getPosX(), moveable.getY()};
-                return ans;
+//                endi2 = (moveable.getPosX() - distance + moveable.getX());
+                return new int[]{endi1, endj1, nowi1 - moveable.getPosX(), moveable.getY()};
+
             }
 
             case EAST: {
-                endi1 = (moveable.getPosX() + distance);
-                endi2 = (moveable.getPosX() + distance + moveable.getX());
-                int[] ans = {nowi2, nowj1, moveable.getPosX() - nowi1, moveable.getY()};
-                return ans;
+//                endi1 = (moveable.getPosX() + distance);
+//                endi2 = (moveable.getPosX() + distance + moveable.getX());
+                return new int[]{nowi2, nowj1, moveable.getPosX() - nowi1, moveable.getY()};
             }
             default:
                 return new int[4];
@@ -202,38 +188,38 @@ public class CollisionUtils {
         if (posY + y - 1 < 0) nowj2 = -1;
         else nowj2 = (posY + y - 1) / Config.TILEY;
 
-        int endi1 = nowi1;
-        int endj1 = nowj1;
-        int endi2 = nowi2;
-        int endj2 = nowj2;
+        int endi1 ;
+        int endj1 ;
+        int endi2 ;
+        int endj2 ;
         switch (facing) {
             case NORTH: {
                 if (posY - distance < 0) endj1 = -1;
                 else endj1 = (posY - distance) / Config.TILEY;
-                if (posY - distance + y < 0) endj2 = -1;
-                else endj2 = (posY - distance + y) / Config.TILEY;
-                int[] ans = {nowj2, endj1, -1, nowi1, nowi2};
-                return ans;
+//                if (posY - distance + y < 0) endj2 = -1;
+//                else endj2 = (posY - distance + y) / Config.TILEY;
+
+                return new int[] {nowj2, endj1, -1, nowi1, nowi2};
             }
             case SOUTH: {
-                endj1 = (posY + distance) / Config.TILEY;
+//                endj1 = (posY + distance) / Config.TILEY;
                 endj2 = (posY + distance + y) / Config.TILEY;
-                int[] ans = {nowj1, endj2, 1, nowi1, nowi2};
-                return ans;
+
+                return new int[]{nowj1, endj2, 1, nowi1, nowi2};
             }
             case WEST: {
                 if (posX - distance < 0) endi1 = -1;
                 else endi1 = (posX - distance) / Config.TILEX;
-                if (posX - distance + x < 0) endi2 = -1;
-                else endi2 = (posX - distance + x) / Config.TILEX;
-                int[] ans = {nowi2, endi1, -1, nowj1, nowj2};
-                return ans;
+//                if (posX - distance + x < 0) endi2 = -1;
+//                else endi2 = (posX - distance + x) / Config.TILEX;
+
+                return new int[]{nowi2, endi1, -1, nowj1, nowj2};
             }
             case EAST: {
-                endi1 = (posX + distance) / Config.TILEX;
+//                endi1 = (posX + distance) / Config.TILEX;
                 endi2 = (posX + distance + x) / Config.TILEX;
-                int[] ans = {nowi1, endi2, 1, nowj1, nowj2};
-                return ans;
+
+                return new int[]{nowi1, endi2, 1, nowj1, nowj2};
             }
             default:
                 return new int[5];
@@ -263,8 +249,10 @@ public class CollisionUtils {
 
                     if (move instanceof EnemyTank && ((Bullet) moveable).getShotFrom() instanceof EnemyTank) {
                         //这个if是防止敌军互相伤害的判定
+                        System.out.println("敌军坦克与敌军子弹碰撞");
                     } else if (move instanceof Bullet && ((Bullet) move).getShotFrom() instanceof EnemyTank && ((Bullet) moveable).getShotFrom() instanceof EnemyTank) {
                         //这个是防止敌军子弹互相抵消的判定
+                        System.out.println("敌军子弹相互碰撞");
                     } else if (CollisionUtils.isCollisionWithRect(
                             move.getPosX(), move.getPosY(), move.getX(), move.getY(),
                             collideBox[0], collideBox[1], collideBox[2], collideBox[3])) {
