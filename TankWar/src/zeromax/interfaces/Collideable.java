@@ -1,11 +1,5 @@
 package zeromax.interfaces;
 
-public interface Collideable {
-    int getPosX();
+public interface Collideable extends Sizeable{
 
-    int getPosY();
-
-    int getX();
-
-    int getY();
 }

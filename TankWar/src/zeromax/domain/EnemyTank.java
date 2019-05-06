@@ -76,6 +76,14 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
         return y;
     }
 
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
+    }
+
     @Override
     public Facing getNowFacing() {
         return nowFacing;
@@ -102,7 +110,7 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
 
     @Override
     public void move(Facing facing, Map map, CopyOnWriteArrayList<Moveable> listMove) {
-        if (collideCheck(map, facing, listMove)
+        if (CollisionUtils.collideCheck(this, map, facing, equipmentWheel.speed)
                 || ((facing == EAST || facing == WEST) && posX % Config.TILEX == 0)
                 || ((facing == NORTH || facing == SOUTH) && posY % Config.TILEY == 0)) {
             Random rand = new Random();
@@ -129,196 +137,6 @@ public class EnemyTank implements Tank, Drawable, Collideable, Hitable, Clearabl
                     break;
             }
         }
-    }
-
-    //TODO:还是这里屎一样的代码，必须重构了，不然根本没办法实现Moveable、Hitable之间的碰撞。加入注释掉的代码就会bug
-    private boolean collideCheck(Map map, Facing facing, CopyOnWriteArrayList<Moveable> listMove) {
-        boolean turn = false;
-        int nowi1 = (posX + 1) / Config.TILEX;
-        int nowj1 = (posY + 1) / Config.TILEY;
-        int nowi2 = (posX + x - 1) / Config.TILEY;
-        int nowj2 = (posY + y - 1) / Config.TILEY;
-        int endi1 = nowi1;
-        int endj1 = nowj1;
-        int endi2 = nowi2;
-        int endj2 = nowj2;
-        Drawable d;
-        switch (facing) {
-            case NORTH: {
-                endj1 = (posY - equipmentWheel.speed) / Config.TILEY;
-                endj2 = (posY - equipmentWheel.speed + y) / Config.TILEY;
-                for (int j = nowj2; j >= endj1; j--) {
-                    d = map.getMapItem(nowi1, j);
-                    if (d instanceof Collideable) {
-                        posY = ((Collideable) d).getPosY() + ((Collideable) d).getY();
-                        turn = true;
-                        break;
-                    }
-                    d = map.getMapItem(nowi2, j);
-                    if (d instanceof Collideable) {
-                        posY = ((Collideable) d).getPosY() + ((Collideable) d).getY();
-                        turn = true;
-                        break;
-                    }
-                    if (j != nowj2 && j == endj1) posY -= equipmentWheel.speed;
-                }
-//                for (Moveable move : listMove) {
-//                    if (move == this) continue;
-//                    if (move instanceof Bullet) {
-//                        if (((Bullet) move).getShotFrom() == this) continue;
-//                        else {
-//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
-//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
-//                                    endi1, endj1, x, nowj1 - posY)) {
-//                                ((Bullet) move).setHit(this);
-//                                ((Bullet) move).setToBeCleared(true);
-//                                posY = ((Bullet) move).getPosY() + ((Bullet) move).getY();
-//
-//                            }
-//                        }
-//                    } else if (move instanceof Collideable) {
-//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
-//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
-//                                endi1, endj1, x, nowj1 - posY)) {
-//                            posY = ((Collideable) move).getPosY() + ((Collideable) move).getY();
-//                            turn = true;
-//                        }
-//                    }
-//                }
-            }
-            break;
-            case SOUTH: {
-                endj1 = (posY + equipmentWheel.speed) / Config.TILEY;
-                endj2 = (posY + equipmentWheel.speed + y) / Config.TILEY;
-                for (int j = nowj1; j <= endj2; j++) {
-                    d = map.getMapItem(nowi1, j);
-                    if (d instanceof Collideable) {
-                        posY = ((Collideable) d).getPosY() - y;
-                        turn = true;
-                        break;
-                    }
-                    d = map.getMapItem(nowi2, j);
-                    if (d instanceof Collideable) {
-                        posY = ((Collideable) d).getPosY() - y;
-                        turn = true;
-                        break;
-                    }
-                    if (j != nowj1 && j == endj2) posY += equipmentWheel.speed;
-                }
-//                for (Moveable move : listMove) {
-//                    if (move == this) continue;
-//                    if (move instanceof Bullet) {
-//                        if (((Bullet) move).getShotFrom() == this) continue;
-//                        else {
-//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
-//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
-//                                    nowi1, nowj2, x, posY - nowj1)) {
-//                                ((Bullet) move).setHit(this);
-//                                ((Bullet) move).setToBeCleared(true);
-//                                posY = ((Collideable) move).getPosY() - y;
-//
-//                            }
-//                        }
-//                    } else if (move instanceof Collideable) {
-//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
-//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
-//                                nowi1, nowj2, x, posY - nowj1)) {
-//                            posY = ((Collideable) move).getPosY() - y;
-//                            turn = true;
-//                        }
-//                    }
-//                }
-            }
-            break;
-            case WEST: {
-                endi1 = (posX - equipmentWheel.speed) / Config.TILEX;
-                endi2 = (posX - equipmentWheel.speed + x) / Config.TILEX;
-                for (int i = nowi2; i >= endi1; i--) {
-                    d = map.getMapItem(i, nowj1);
-                    if (d instanceof Collideable) {
-                        posX = ((Collideable) d).getPosX() + ((Collideable) d).getX();
-                        turn = true;
-                        break;
-                    }
-                    d = map.getMapItem(i, nowj2);
-                    if (d instanceof Collideable) {
-                        posX = ((Collideable) d).getPosX() + ((Collideable) d).getX();
-                        turn = true;
-                        break;
-                    }
-                    if (i != nowi2 && i == endi1) posX -= equipmentWheel.speed;
-                }
-//                for (Moveable move : listMove) {
-//                    if (move == this) continue;
-//                    if (move instanceof Bullet) {
-//                        if (((Bullet) move).getShotFrom() == this) continue;
-//                        else {
-//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
-//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
-//                                    endi1, endj1, nowi1 - posX, y)) {
-//                                ((Bullet) move).setHit(this);
-//                                ((Bullet) move).setToBeCleared(true);
-//                                posX = ((Collideable) move).getPosX() + ((Collideable) move).getX();
-//
-//                            }
-//                        }
-//                    } else if (move instanceof Collideable) {
-//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
-//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
-//                                endi1, endj1, nowi1 - posX, y)) {
-//                            posX = ((Collideable) move).getPosX() + ((Collideable) move).getX();
-//                            turn = true;
-//                        }
-//                    }
-//                }
-            }
-            break;
-            case EAST: {
-                endi1 = (posX + equipmentWheel.speed) / Config.TILEX;
-                endi2 = (posX + equipmentWheel.speed + x) / Config.TILEX;
-                for (int i = nowi1; i <= endi2; i++) {
-                    d = map.getMapItem(i, nowj1);
-                    if (d instanceof Collideable) {
-                        posX = ((Collideable) d).getPosX() - x;
-                        turn = true;
-                        break;
-                    }
-                    d = map.getMapItem(i, nowj2);
-                    if (d instanceof Collideable) {
-                        posX = ((Collideable) d).getPosX() - x;
-                        turn = true;
-                        break;
-                    }
-                    if (i != nowi1 && i == endi2) posX += equipmentWheel.speed;
-                }
-//                for (Moveable move : listMove) {
-//                    if (move == this) continue;
-//                    if (move instanceof Bullet) {
-//                        if (((Bullet) move).getShotFrom() == this) continue;
-//                        else {
-//                            if (CollisionUtils.isCollisionWithRect(((Bullet) move).getPosX(), ((Bullet) move).getPosY(),
-//                                    ((Bullet) move).getX(), ((Bullet) move).getY(),
-//                                    nowi2, nowj1, posX - nowi1, y)) {
-//                                ((Bullet) move).setHit(this);
-//                                ((Bullet) move).setToBeCleared(true);
-//                                posX = ((Collideable) move).getPosX() - x;
-//
-//                            }
-//                        }
-//                    } else if (move instanceof Collideable) {
-//                        if (CollisionUtils.isCollisionWithRect(((Collideable) move).getPosX(), ((Collideable) move).getPosY(),
-//                                ((Collideable) move).getX(), ((Collideable) move).getY(),
-//                                nowi2, nowj1, posX - nowi1, y)) {
-//
-//                            posX = ((Collideable) move).getPosX() - x;
-//                            turn = true;
-//                        }
-//                    }
-//                }
-            }
-            break;
-        }
-        return turn;
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Bullet implements Drawable, Hitable, Clearable, Moveable {
     private Hitable hit;
     private Tank shotFrom;
 
-    private String imgPath = "TankWar\\res\\img/bullet_u.gif";
+    private String imgPath = "TankWar\\res\\img/shot_top.gif";
 
     public Bullet(Tank tank) {
         damage = 10;
@@ -35,7 +35,7 @@ public class Bullet implements Drawable, Hitable, Clearable, Moveable {
         facing = tank.getNowFacing();
         switch (facing) {
             case NORTH:
-                imgPath = "TankWar\\res\\img/bullet_u.gif";
+                imgPath = "TankWar\\res\\img/shot_top.gif";
                 try {
                     int[] arr = DrawUtils.getSize(imgPath);
                     x = arr[0];
@@ -47,7 +47,7 @@ public class Bullet implements Drawable, Hitable, Clearable, Moveable {
                 posY = tank.getPosY() - y;
                 break;
             case SOUTH:
-                imgPath = "TankWar\\res\\img/bullet_d.gif";
+                imgPath = "TankWar\\res\\img/shot_bottom.gif";
                 try {
                     int[] arr = DrawUtils.getSize(imgPath);
                     x = arr[0];
@@ -59,7 +59,7 @@ public class Bullet implements Drawable, Hitable, Clearable, Moveable {
                 posY = tank.getPosY() + tank.getY();
                 break;
             case WEST:
-                imgPath = "TankWar\\res\\img/bullet_l.gif";
+                imgPath = "TankWar\\res\\img/shot_left.gif";
                 try {
                     int[] arr = DrawUtils.getSize(imgPath);
                     x = arr[0];
@@ -71,7 +71,7 @@ public class Bullet implements Drawable, Hitable, Clearable, Moveable {
                 posY = tank.getPosY() + tank.getY() / 2 - y / 2;
                 break;
             case EAST:
-                imgPath = "TankWar\\res\\img/bullet_r.gif";
+                imgPath = "TankWar\\res\\img/shot_right.gif";
                 try {
                     int[] arr = DrawUtils.getSize(imgPath);
                     x = arr[0];
@@ -163,6 +163,16 @@ public class Bullet implements Drawable, Hitable, Clearable, Moveable {
     @Override
     public void move(Facing face, Map map, CopyOnWriteArrayList<Moveable> listMove) {
         hitCheck(map, facing, listMove);
+    }
+
+    @Override
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    @Override
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
 
     //TODO:还是这里屎一样的代码，必须重构了，不然根本没办法实现Moveable、Hitable之间的碰撞

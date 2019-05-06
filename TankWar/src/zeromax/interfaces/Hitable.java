@@ -4,6 +4,7 @@ import zeromax.domain.Blast;
 import zeromax.domain.Bullet;
 
 public interface Hitable {
+
     int getPosX();
 
     int getPosY();
